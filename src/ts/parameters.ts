@@ -9,6 +9,7 @@ declare const Tabs: any;
 
 /* === IDs ============================================================ */
 const controlId = {
+    ATTRACTOR: "attractor-picker-id",
     A: "a-range-id",
     B: "b-range-id",
     C: "c-range-id",
@@ -32,6 +33,7 @@ const observers: {
     clear: [],
 };
 
+let attractor: string;
 let a: number;
 let b: number;
 let c: number;
@@ -42,6 +44,14 @@ let quality: number;
 
 /* === INTERFACE ====================================================== */
 class Parameters {
+    public static get attractor(): string {
+        return attractor;
+    }
+    public static set attractor(att: string) {
+        Picker.setValue(controlId.ATTRACTOR, att);
+        attractor = att;
+    }
+
     public static get a(): number {
         return a;
     }
@@ -75,6 +85,10 @@ class Parameters {
 
 /* === EVENTS BINDING ================================================= */
 /* --- PARAMETERS ----------------------------------------------------- */
+Picker.addObserver(controlId.ATTRACTOR, (value: string) => {
+    attractor = value;
+    callObservers(observers.clear);
+});
 
 Range.addObserver(controlId.A, (newvalue: number) => {
     a = newvalue;

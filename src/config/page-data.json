@@ -23,6 +23,18 @@
             "title": "Parameters",
             "controls": [
                 {
+                    "title": "Attractor",
+                    "type": "picker",
+                    "id": "attractor-picker-id",
+                    "placeholder": "none",
+                    "options": [
+                        {
+                            "value": "de-jong",
+                            "label": "De Jong"
+                        }
+                    ]
+                },
+                {
                     "title": "a",
                     "type": "range",
                     "id": "a-range-id",

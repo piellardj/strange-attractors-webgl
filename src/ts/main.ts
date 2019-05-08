@@ -2,6 +2,7 @@ import * as GLCanvas from "./gl-utils/gl-canvas";
 import { gl } from "./gl-utils/gl-canvas";
 import Viewport from "./gl-utils/viewport";
 
+import Attractor from "./attractors/attractor";
 import DeJongAttractor from "./attractors/de-jong";
 import Parameters from "./parameters";
 
@@ -14,7 +15,10 @@ function main() {
     Canvas.Observers.canvasResize.push(() => needToAdjustCanvas = true);
     Parameters.clearObservers.push(() => needToAdjustCanvas = true);
 
-    const attractor = new DeJongAttractor();
+    Parameters.attractor = "de-jong";
+
+    const attractors = {};
+    attractors["de-jong"] = new DeJongAttractor();
 
     let totalPoints: number;
     function setTotalPoints(total: number): void {
@@ -23,25 +27,25 @@ function main() {
     }
     setTotalPoints(0);
 
-    let drawnOnce = false;
+    let attractor: Attractor;
     function mainLoop() {
         if (needToAdjustCanvas) {
             needToAdjustCanvas = false;
             setTotalPoints(0);
-            drawnOnce = false;
 
             GLCanvas.adjustSize();
             Viewport.setFullCanvas(gl);
             gl.clear(gl.COLOR_BUFFER_BIT);
+
+            attractor = attractors[Parameters.attractor];
         }
 
-        if (Parameters.autorun && !drawnOnce) {
-            // drawnOnce = true;
+        if (Parameters.autorun) {
             const STEP_SIZE = Math.pow(2, 16);
             setTotalPoints(totalPoints + STEP_SIZE);
             attractor.drawXPoints(STEP_SIZE);
         }
-    
+
         requestAnimationFrame(mainLoop);
     }
 
