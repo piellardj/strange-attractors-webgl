@@ -3,8 +3,9 @@ import { gl } from "./gl-utils/gl-canvas";
 import Viewport from "./gl-utils/viewport";
 
 import Attractor from "./attractors/attractor";
+import BedHeadAttractor from "./attractors/bedhead";
 import DeJongAttractor from "./attractors/de-jong";
-import Parameters from "./parameters";
+import { attractorNames, Parameters } from "./parameters";
 
 declare const Canvas: any;
 
@@ -15,10 +16,11 @@ function main() {
     Canvas.Observers.canvasResize.push(() => needToAdjustCanvas = true);
     Parameters.clearObservers.push(() => needToAdjustCanvas = true);
 
-    Parameters.attractor = "de-jong";
+    Parameters.attractor = attractorNames.DeJong;
 
     const attractors = {};
-    attractors["de-jong"] = new DeJongAttractor();
+    attractors[attractorNames.Bedhead] = new BedHeadAttractor();
+    attractors[attractorNames.DeJong] = new DeJongAttractor();
 
     let totalPoints: number;
     function setTotalPoints(total: number): void {
@@ -38,6 +40,7 @@ function main() {
             gl.clear(gl.COLOR_BUFFER_BIT);
 
             attractor = attractors[Parameters.attractor];
+            attractor.toggleParametersVisibility();
         }
 
         if (Parameters.autorun) {
@@ -54,7 +57,6 @@ function main() {
     function initGL() {
         const glParams = {
             alpha: false,
-            // antialias: false,
             depth: false,
             preserveDrawingBuffer: true,
         };

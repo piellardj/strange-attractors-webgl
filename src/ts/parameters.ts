@@ -7,6 +7,11 @@ declare const Picker: any;
 declare const Range: any;
 declare const Tabs: any;
 
+const attractorNames = {
+    DeJong: "de-jong",
+    Bedhead: "bedhead",
+};
+
 /* === IDs ============================================================ */
 const controlId = {
     ATTRACTOR: "attractor-picker-id",
@@ -125,4 +130,8 @@ Range.addObserver(controlId.QUALITY, (newvalue: number) => {
 });
 quality = Range.getValue(controlId.QUALITY);
 
-export default Parameters;
+export {
+    attractorNames,
+    controlId as ControlsID,
+    Parameters,
+};

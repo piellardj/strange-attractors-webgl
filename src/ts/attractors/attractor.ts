@@ -2,7 +2,7 @@ import { gl } from "../gl-utils/gl-canvas";
 import Shader from "../gl-utils/shader";
 import * as ShaderManager from "../gl-utils/shader-manager";
 import VBO from "../gl-utils/vbo";
-import Parameters from "../parameters";
+import { Parameters } from "../parameters";
 
 let shader: Shader = null;
 let pointsVBO: VBO = null;
@@ -66,6 +66,8 @@ abstract class Attractor {
             gl.drawArrays(gl.POINTS, 0, nbPoints);
         }
     }
+
+    public abstract toggleParametersVisibility(): void;
 
     /* Should update minX, maxX, minY and maxY */
     protected abstract computeXPoints(nbPoints: number): Float32Array;

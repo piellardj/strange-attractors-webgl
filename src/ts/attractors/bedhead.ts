@@ -3,7 +3,7 @@ import Attractor from "./attractor";
 
 declare const Controls: any;
 
-class DeJongAttractor extends Attractor {
+class BeadheadAttractor extends Attractor {
     constructor() {
         super();
     }
@@ -11,8 +11,8 @@ class DeJongAttractor extends Attractor {
     public toggleParametersVisibility(): void {
         Controls.setVisibility(ControlsID.A, true);
         Controls.setVisibility(ControlsID.B, true);
-        Controls.setVisibility(ControlsID.C, true);
-        Controls.setVisibility(ControlsID.D, true);
+        Controls.setVisibility(ControlsID.C, false);
+        Controls.setVisibility(ControlsID.D, false);
     }
 
     protected computeXPoints(nbPoints: number): Float32Array {
@@ -20,24 +20,22 @@ class DeJongAttractor extends Attractor {
 
         const a = Parameters.a;
         const b = Parameters.b;
-        const c = Parameters.c;
-        const d = Parameters.d;
 
         let x = Math.random() * 2 - 1;
         let y = Math.random() * 2 - 1;
 
         /* ignore the first 1000 ones */
         for (let i = 0; i < 100; ++i) {
-            data[0] = Math.sin(a * y) - Math.cos(b * x);
-            data[1] = Math.sin(c * x) - Math.cos(d * y);
+            data[0] = Math.sin(x * y / b) + Math.cos(a * x - y);
+            data[1] = x + Math.sin(y) / b;
 
             x = data[0];
             y = data[1];
         }
 
         for (let i = 0; i < nbPoints; ++i) {
-            data[2 * i + 0] = Math.sin(a * y) - Math.cos(b * x);
-            data[2 * i + 1] = Math.sin(c * x) - Math.cos(d * y);
+            data[2 * i + 0] = Math.sin(x * y / b) + Math.cos(a * x - y);
+            data[2 * i + 1] = x + Math.sin(y) / b;
 
             x = data[2 * i + 0];
             y = data[2 * i + 1];
@@ -52,4 +50,4 @@ class DeJongAttractor extends Attractor {
     }
 }
 
-export default DeJongAttractor;
+export default BeadheadAttractor;
