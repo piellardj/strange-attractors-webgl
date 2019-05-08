@@ -1,0 +1,84 @@
+{
+    "title": "Strange attractors",
+    "description": "Dynamic and interactive strange attractors drawings",
+    "introduction": [],
+    "githubProjectName": "strange-attractors-webgl",
+    "additionalLinks": [],
+    "scriptFiles": [
+        "script/main.min.js"
+    ],
+    "indicators": [
+        {
+            "id": "points-drawn",
+            "label": "Total drawn points"
+        }
+    ],
+    "canvas": {
+        "width": 512,
+        "height": 512,
+        "enableFullscreen": true
+    },
+    "controlsSections": [
+        {
+            "title": "Parameters",
+            "controls": [
+                {
+                    "title": "a",
+                    "type": "range",
+                    "id": "a-range-id",
+                    "min": -5,
+                    "max": 5,
+                    "value": -2.24,
+                    "step": 0.01
+                },
+                {
+                    "title": "b",
+                    "type": "range",
+                    "id": "b-range-id",
+                    "min": -5,
+                    "max": 5,
+                    "value": 0.43,
+                    "step": 0.01
+                },
+                {
+                    "title": "c",
+                    "type": "range",
+                    "id": "c-range-id",
+                    "min": -5,
+                    "max": 5,
+                    "value": -0.65,
+                    "step": 0.01
+                },
+                {
+                    "title": "d",
+                    "type": "range",
+                    "id": "d-range-id",
+                    "min": -5,
+                    "max": 5,
+                    "value": -2.43,
+                    "step": 0.01
+                }
+            ]
+        },
+        {
+            "title": "Rendering",
+            "controls": [
+                {
+                    "title": "Keep drawing",
+                    "type": "checkbox",
+                    "id": "autorun-checkbox-id",
+                    "checked": true
+                },
+                {
+                    "title": "Quality",
+                    "type": "range",
+                    "id": "quality-range-id",
+                    "min": 0,
+                    "max": 1,
+                    "value": 0.9,
+                    "step": 0.01
+                }
+            ]
+        }
+    ]
+}

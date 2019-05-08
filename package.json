@@ -1,0 +1,29 @@
+{
+  "name": "lights-webgl",
+  "version": "0.0.1",
+  "homepage": "https://piellardj.github.io/lights-webgl",
+  "description": "Simple 2D ray-tracer",
+  "main": "build/index.js",
+  "scripts": {
+    "build-page": "node src/generate-page.js",
+    "build-shaders": "node src/build-shaders.js",
+    "build": "npm run build-page && npm run build-shaders && npm run webpack",
+    "clean": "shx rm -rf docs/*",
+    "lint": "tslint -c src/config/tslint.json -p src/config/tsconfig.json",
+    "rebuild": "npm run clean && npm run build",
+    "webpack": "webpack --config src/config/webpack.config.js --output docs/script/main.min.js"
+  },
+  "author": "“Jérémie PIELLARD <jeremie.piellard@gmail.com> (https://github.com/piellardj)",
+  "repository": "github:piellardj/lights-webgl",
+  "license": "ISC",
+  "devDependencies": {
+    "fs-extra": "^7.0.1",
+    "shx": "^0.3.2",
+    "ts-loader": "^6.0.0",
+    "tslint": "^5.16.0",
+    "typescript": "^3.4.5",
+    "webpack": "^4.30.0",
+    "webpack-cli": "^3.3.2",
+    "webpage-templates": "github:piellardj/webpage-templates"
+  }
+}
