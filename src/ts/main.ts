@@ -4,7 +4,9 @@ import Viewport from "./gl-utils/viewport";
 
 import Attractor from "./attractors/attractor";
 import BedHeadAttractor from "./attractors/bedhead";
+import CliffordAttractor from "./attractors/clifford";
 import DeJongAttractor from "./attractors/de-jong";
+import FractalDreamAttractor from "./attractors/fractal-dream";
 import { attractorNames, Parameters } from "./parameters";
 
 declare const Canvas: any;
@@ -20,7 +22,9 @@ function main() {
 
     const attractors = {};
     attractors[attractorNames.Bedhead] = new BedHeadAttractor();
+    attractors[attractorNames.Clifford] = new CliffordAttractor();
     attractors[attractorNames.DeJong] = new DeJongAttractor();
+    attractors[attractorNames.FractalDream] = new FractalDreamAttractor();
 
     let totalPoints: number;
     function setTotalPoints(total: number): void {

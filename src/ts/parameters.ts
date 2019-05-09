@@ -10,6 +10,8 @@ declare const Tabs: any;
 const attractorNames = {
     DeJong: "de-jong",
     Bedhead: "bedhead",
+    Clifford: "clifford",
+    FractalDream: "fractal-dream",
 };
 
 /* === IDs ============================================================ */
