@@ -8,6 +8,15 @@ class FractalDreamAttractor extends Attractor {
         super();
     }
 
+    public get name(): string {
+        return "Fractal Dream";
+    }
+
+    public get formula(): string {
+        return `x_{n+1} = sin(b*y_{n}) + c*sin(b*x_{n})
+        y_{n+1} = sin(a*x_{n}) + d*sin(a*y_{n})`;
+    }
+
     public toggleParametersVisibility(): void {
         Controls.setVisibility(ControlsID.A, true);
         Controls.setVisibility(ControlsID.B, true);

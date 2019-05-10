@@ -8,6 +8,15 @@ class BeadheadAttractor extends Attractor {
         super();
     }
 
+    public get name(): string {
+        return "Bedhead";
+    }
+
+    public get formula(): string {
+        return `x_{n+1} = sin(x_{n}*y_{n}/b) + cos(a*x_{n} - y_{n})
+        y_{n+1} = x_{n} + sin(y_{n})/b`;
+    }
+
     public toggleParametersVisibility(): void {
         Controls.setVisibility(ControlsID.A, true);
         Controls.setVisibility(ControlsID.B, true);

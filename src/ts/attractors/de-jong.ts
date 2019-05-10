@@ -8,6 +8,15 @@ class DeJongAttractor extends Attractor {
         super();
     }
 
+    public get name(): string {
+        return "De Jong";
+    }
+
+    public get formula(): string {
+        return `x_{n+1} = sin(a*y_{n}) - cos(b*x_{n})
+        y_{n+1} = sin(c*x_{n}) - cos(d*y_{n})`;
+    }
+
     public toggleParametersVisibility(): void {
         Controls.setVisibility(ControlsID.A, true);
         Controls.setVisibility(ControlsID.B, true);

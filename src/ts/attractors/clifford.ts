@@ -8,6 +8,15 @@ class CliffordAttractor extends Attractor {
         super();
     }
 
+    public get name(): string {
+        return "Clifford";
+    }
+
+    public get formula(): string {
+        return `x_{n+1} = sin(a*y_{n}) + c*cos(a*x_{n})
+        y_{n+1} = sin(c*x_{n}) + d*cos(b*y_{n})`;
+    }
+
     public toggleParametersVisibility(): void {
         Controls.setVisibility(ControlsID.A, true);
         Controls.setVisibility(ControlsID.B, true);

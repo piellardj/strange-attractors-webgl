@@ -67,6 +67,9 @@ abstract class Attractor {
         }
     }
 
+    public abstract get name(): string;
+    public abstract get formula(): string;
+
     public abstract toggleParametersVisibility(): void;
 
     /* Should update minX, maxX, minY and maxY */

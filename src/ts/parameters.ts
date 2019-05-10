@@ -1,3 +1,5 @@
+import * as Infos from "./infos";
+
 declare const Button: any;
 declare const Canvas: any;
 declare const Checkbox: any;
@@ -22,6 +24,7 @@ const controlId = {
     C: "c-range-id",
     D: "d-range-id",
     AUTORUN: "autorun-checkbox-id",
+    FORMULA: "formula-checkbox-id",
     QUALITY: "quality-range-id",
 };
 
@@ -125,6 +128,11 @@ Checkbox.addObserver(controlId.AUTORUN, (checked: boolean) => {
     autorun = checked;
 });
 autorun = Checkbox.isChecked(controlId.AUTORUN);
+
+Checkbox.addObserver(controlId.FORMULA, (checked: boolean) => {
+    Infos.setVisibility(checked);
+});
+Infos.setVisibility(Checkbox.isChecked(controlId.FORMULA));
 
 Range.addObserver(controlId.QUALITY, (newvalue: number) => {
     quality = newvalue;

@@ -98,6 +98,12 @@
                     "checked": true
                 },
                 {
+                    "title": "Show formula",
+                    "type": "checkbox",
+                    "id": "formula-checkbox-id",
+                    "checked": true
+                },
+                {
                     "title": "Quality",
                     "type": "range",
                     "id": "quality-range-id",

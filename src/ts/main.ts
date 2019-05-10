@@ -7,6 +7,7 @@ import BedHeadAttractor from "./attractors/bedhead";
 import CliffordAttractor from "./attractors/clifford";
 import DeJongAttractor from "./attractors/de-jong";
 import FractalDreamAttractor from "./attractors/fractal-dream";
+import * as Infos from "./infos";
 import { attractorNames, Parameters } from "./parameters";
 
 declare const Canvas: any;
@@ -45,6 +46,8 @@ function main() {
 
             attractor = attractors[Parameters.attractor];
             attractor.toggleParametersVisibility();
+            Infos.setTitle(attractor.name);
+            Infos.setFormula(attractor.formula);
         }
 
         if (Parameters.autorun) {
