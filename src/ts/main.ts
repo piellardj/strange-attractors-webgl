@@ -8,9 +8,10 @@ import CliffordAttractor from "./attractors/clifford";
 import DeJongAttractor from "./attractors/de-jong";
 import FractalDreamAttractor from "./attractors/fractal-dream";
 import * as Infos from "./infos";
-import { attractorNames, Parameters } from "./parameters";
+import { attractorNames, ControlsID, Parameters } from "./parameters";
 
 declare const Canvas: any;
+declare const FileControl: any;
 
 function main() {
     initGL();
@@ -59,8 +60,6 @@ function main() {
         requestAnimationFrame(mainLoop);
     }
 
-    requestAnimationFrame(mainLoop);
-
     function initGL() {
         const glParams = {
             alpha: false,
@@ -76,6 +75,33 @@ function main() {
         gl.blendEquation(gl.FUNC_ADD);
         gl.blendFunc(gl.ONE, gl.ONE);
     }
+
+    FileControl.addDownloadObserver(ControlsID.DOWNLOAD, () => {
+        const width = 1024;
+        const height = 1024;
+
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+
+        canvas.width = width;
+        canvas.height = height;
+
+        Infos.drawToCanvas(ctx);
+
+        if ((canvas as any).msToBlob) { // for IE
+            const blob = (canvas as any).msToBlob();
+            window.navigator.msSaveBlob(blob, "image.png");
+        } else {
+            canvas.toBlob((blob) => {
+                const link = document.createElement("a");
+                link.download = "image.png";
+                link.href = URL.createObjectURL(blob);
+                link.click();
+            });
+        }
+    });
+
+    requestAnimationFrame(mainLoop);
 }
 
 main();

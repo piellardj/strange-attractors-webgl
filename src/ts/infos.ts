@@ -1,13 +1,11 @@
 declare const Canvas: any;
 
 const FONT_NAME = "Nothing You Could Do";
-// const FONT_NAME = "Indie Flower";
-// const FONT_NAME = "Tangerine";
-// const FONT_NAME = "Architects Daughter";
-// const FONT_NAME = "Coming Soon";
-// const FONT_NAME = "Caveat";
-// const FONT_NAME = "Kaushan Script";
-// const FONT_NAME = "Covered By Your Grace";
+const BLOCK_MARGIN = 8;
+const BLOCK_PADDING = 8;
+const TITLE_FONT_SIZE = 24;
+const FONT_SIZE = 20;
+const SUB_FONT_SIZE = 16;
 
 (function registerFont() {
     const fontLink = document.createElement("link");
@@ -22,22 +20,22 @@ const FONT_NAME = "Nothing You Could Do";
         position: absolute;
         bottom: 0;
         left: 0;
-        padding: 8px;
+        margin: ` + BLOCK_MARGIN + `px;
         text-align: left;
         color: white;
         font-family: '` + FONT_NAME + `', cursive;
-        font-size: 20px;
+        font-size: ` + FONT_SIZE + `px;
     }
     .infos sub {
-        font-size: 16px;
+        font-size: ` + SUB_FONT_SIZE + `px;
     }
     .infos div {
-        padding: 8px;
+        padding: ` + BLOCK_PADDING + `px;
         background: black;
     }
     .infos .attractor-name {
         display: inline-block;
-        font-size: 24px;
+        font-size: ` + TITLE_FONT_SIZE + `px;
     }`;
 
     const infosStyle = document.createElement("style");
@@ -96,7 +94,66 @@ function setFormula(formula: string) {
     formulaElt.innerHTML = html;
 }
 
+function drawToCanvas(ctx: CanvasRenderingContext2D) {
+    function setFontSize(sizeInPx: number) {
+        ctx.font = sizeInPx + "px " + FONT_NAME;
+    }
+
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, 1024, 1024);
+    ctx.fillStyle = "white";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+
+    const blockLeft = BLOCK_MARGIN + BLOCK_PADDING;
+    let top = BLOCK_MARGIN + BLOCK_PADDING;
+
+    let fontSize = TITLE_FONT_SIZE;
+    setFontSize(fontSize);
+    ctx.fillText(titleElt.textContent, blockLeft, top);
+    top += 2 * fontSize;
+
+    fontSize = FONT_SIZE;
+    setFontSize(fontSize);
+
+    /* HTML tags cannot be used when drawing text on a canvas,
+     * so we need to handle manually tags such as br and sub. */
+    const formula = formulaElt.innerHTML.replace(/\s*<br\/?>\s*/g, "\n");
+    const lines = formula.split("\n");
+    lines.forEach((str) => {
+        let dLeft = 0;
+        let currIndex = 0;
+
+        function writeText(text: string) {
+            ctx.fillText(text, blockLeft + dLeft, top);
+            dLeft += ctx.measureText(text).width;
+        }
+
+        function findNext(nodeName: string) {
+            const i = str.indexOf(nodeName, currIndex);
+            return (i < 0) ? str.length : i;
+        }
+
+        while (currIndex < str.length) {
+            let index = findNext("<sub>");
+            writeText(str.substring(currIndex, index));
+            currIndex = index + 5; // 5 === "<sub>".length
+
+            index = findNext("</sub>");
+            top += .4 * fontSize;
+            setFontSize(SUB_FONT_SIZE);
+            writeText(str.substring(currIndex, index));
+            top -= .4 * fontSize;
+            currIndex = index + 6; // 6 === "</sub>".length
+
+            setFontSize(fontSize);
+        }
+        top += 1.5 * fontSize;
+    });
+}
+
 export {
+    drawToCanvas,
     setFormula,
     setTitle,
     setVisibility,

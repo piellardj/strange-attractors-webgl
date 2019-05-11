@@ -26,6 +26,7 @@ const controlId = {
     AUTORUN: "autorun-checkbox-id",
     FORMULA: "formula-checkbox-id",
     QUALITY: "quality-range-id",
+    DOWNLOAD: "file-download-id",
 };
 
 /* === OBSERVERS ====================================================== */
