@@ -54,9 +54,10 @@ abstract class Attractor {
                 0.5 * (this.maxX + this.minX),
                 0.5 * (this.maxY + this.minY),
             ];
+            const maxDimension = 0.1 + Math.max(this.maxX - this.minX, this.maxY - this.minY);
             shader.u["uScale"].value = [
-                2 / (0.1 + this.maxX - this.minX) / Math.max(aspectRatio, 1),
-                2 / (0.1 + this.maxY - this.minY) * Math.min(aspectRatio, 1),
+                2 / maxDimension / Math.max(aspectRatio, 1),
+                2 / maxDimension * Math.min(aspectRatio, 1),
             ];
             /* tslint:enable:no-string-literal */
 
