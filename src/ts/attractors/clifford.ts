@@ -17,6 +17,15 @@ class CliffordAttractor extends Attractor {
         y_{n+1} = sin(c*x_{n}) + d*cos(b*y_{n})`;
     }
 
+    public get parameters(): string[] {
+        return [
+            "a = " + Parameters.a,
+            "b = " + Parameters.b,
+            "c = " + Parameters.c,
+            "d = " + Parameters.d,
+        ];
+    }
+
     public toggleParametersVisibility(): void {
         Controls.setVisibility(ControlsID.A, true);
         Controls.setVisibility(ControlsID.B, true);

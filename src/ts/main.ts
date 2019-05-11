@@ -49,6 +49,7 @@ function main() {
             attractor.toggleParametersVisibility();
             Infos.setTitle(attractor.name);
             Infos.setFormula(attractor.formula);
+            Infos.setParameters(attractor.parameters);
         }
 
         if (Parameters.autorun) {

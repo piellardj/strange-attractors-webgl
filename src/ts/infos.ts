@@ -20,6 +20,7 @@ const SUB_FONT_SIZE = 16;
         position: absolute;
         bottom: 0;
         left: 0;
+        line-height: 1em;
         margin: ` + BLOCK_MARGIN + `px;
         text-align: left;
         color: white;
@@ -36,6 +37,9 @@ const SUB_FONT_SIZE = 16;
     .infos .attractor-name {
         display: inline-block;
         font-size: ` + TITLE_FONT_SIZE + `px;
+    }
+    .infos .attractor-parameters {
+        display: inline-block;
     }`;
 
     const infosStyle = document.createElement("style");
@@ -50,13 +54,15 @@ const SUB_FONT_SIZE = 16;
 
 const titleElt = document.createElement("div");
 titleElt.className = "attractor-name";
-
 const formulaElt = document.createElement("div");
+const parametersElt = document.createElement("div");
+parametersElt.className = "attractor-parameters";
 
 const infosBlockElt = document.createElement("div");
 infosBlockElt.className = "infos";
 infosBlockElt.appendChild(titleElt);
 infosBlockElt.appendChild(formulaElt);
+infosBlockElt.appendChild(parametersElt);
 setVisibility(false);
 
 const canvasContainer = (Canvas.getCanvas() as HTMLElement).parentElement;
@@ -94,6 +100,10 @@ function setFormula(formula: string) {
     formulaElt.innerHTML = html;
 }
 
+function setParameters(parameters: string[]) {
+    parametersElt.innerHTML = parameters.join("<br/>");
+}
+
 function drawToCanvas(ctx: CanvasRenderingContext2D) {
     function setFontSize(sizeInPx: number) {
         ctx.font = sizeInPx + "px " + FONT_NAME;
@@ -101,6 +111,8 @@ function drawToCanvas(ctx: CanvasRenderingContext2D) {
 
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, 1024, 1024);
+    ctx.fillStyle = "red";
+    ctx.fillRect(BLOCK_MARGIN, BLOCK_MARGIN, titleElt.clientWidth, titleElt.clientHeight);
     ctx.fillStyle = "white";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
@@ -111,16 +123,18 @@ function drawToCanvas(ctx: CanvasRenderingContext2D) {
     let fontSize = TITLE_FONT_SIZE;
     setFontSize(fontSize);
     ctx.fillText(titleElt.textContent, blockLeft, top);
-    top += 2 * fontSize;
+    top += 2 * FONT_SIZE;
 
     fontSize = FONT_SIZE;
     setFontSize(fontSize);
 
+    ctx.fillStyle = "red";
+    ctx.fillRect(BLOCK_MARGIN, top - BLOCK_PADDING, formulaElt.clientWidth, formulaElt.clientHeight);
+
+    ctx.fillStyle = "white";
     /* HTML tags cannot be used when drawing text on a canvas,
      * so we need to handle manually tags such as br and sub. */
-    const formula = formulaElt.innerHTML.replace(/\s*<br\/?>\s*/g, "\n");
-    const lines = formula.split("\n");
-    lines.forEach((str) => {
+    formulaElt.innerHTML.split(/\s*<br\/?>\s*/g).forEach((str) => {
         let dLeft = 0;
         let currIndex = 0;
 
@@ -148,13 +162,25 @@ function drawToCanvas(ctx: CanvasRenderingContext2D) {
 
             setFontSize(fontSize);
         }
-        top += 1.5 * fontSize;
+        top += 1.25 * fontSize;
+    });
+
+    top += 1 * FONT_SIZE;
+
+    ctx.fillStyle = "red";
+    ctx.fillRect(BLOCK_MARGIN, top - BLOCK_PADDING, parametersElt.clientWidth, parametersElt.clientHeight);
+
+    ctx.fillStyle = "white";
+    parametersElt.innerHTML.split(/\s*<br\/?>\s*/g).forEach((line) => {
+        ctx.fillText(line, blockLeft, top);
+        top += 1 * fontSize;
     });
 }
 
 export {
     drawToCanvas,
     setFormula,
+    setParameters,
     setTitle,
     setVisibility,
 };

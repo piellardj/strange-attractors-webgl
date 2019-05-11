@@ -17,6 +17,15 @@ class FractalDreamAttractor extends Attractor {
         y_{n+1} = sin(a*x_{n}) + d*sin(a*y_{n})`;
     }
 
+    public get parameters(): string[] {
+        return [
+            "a = " + Parameters.a,
+            "b = " + Parameters.b,
+            "c = " + Parameters.c,
+            "d = " + Parameters.d,
+        ];
+    }
+
     public toggleParametersVisibility(): void {
         Controls.setVisibility(ControlsID.A, true);
         Controls.setVisibility(ControlsID.B, true);

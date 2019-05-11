@@ -17,6 +17,13 @@ class BeadheadAttractor extends Attractor {
         y_{n+1} = x_{n} + sin(y_{n})/b`;
     }
 
+    public get parameters(): string[] {
+        return [
+            "a = " + Parameters.a,
+            "b = " + Parameters.b,
+        ];
+    }
+
     public toggleParametersVisibility(): void {
         Controls.setVisibility(ControlsID.A, true);
         Controls.setVisibility(ControlsID.B, true);

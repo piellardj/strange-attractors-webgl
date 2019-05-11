@@ -68,8 +68,10 @@ abstract class Attractor {
         }
     }
 
+    /* For infos block display */
     public abstract get name(): string;
     public abstract get formula(): string;
+    public abstract get parameters(): string[];
 
     public abstract toggleParametersVisibility(): void;
 
