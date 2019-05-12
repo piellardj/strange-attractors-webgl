@@ -109,10 +109,14 @@ function drawToCanvas(ctx: CanvasRenderingContext2D) {
         ctx.font = sizeInPx + "px " + FONT_NAME;
     }
 
-    ctx.fillStyle = "black";
-    ctx.fillRect(0, 0, 1024, 1024);
-    ctx.fillStyle = "red";
-    ctx.fillRect(BLOCK_MARGIN, BLOCK_MARGIN, titleElt.clientWidth, titleElt.clientHeight);
+    function drawBackground(x: number, y: number, width: number, height: number) {
+        const previousFillStyle = ctx.fillStyle;
+        ctx.fillStyle = "black";
+        ctx.fillRect(x, y, width, height);
+        ctx.fillStyle = previousFillStyle;
+    }
+
+    drawBackground(BLOCK_MARGIN, BLOCK_MARGIN, titleElt.clientWidth, titleElt.clientHeight);
     ctx.fillStyle = "white";
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
@@ -128,10 +132,8 @@ function drawToCanvas(ctx: CanvasRenderingContext2D) {
     fontSize = FONT_SIZE;
     setFontSize(fontSize);
 
-    ctx.fillStyle = "red";
-    ctx.fillRect(BLOCK_MARGIN, top - BLOCK_PADDING, formulaElt.clientWidth, formulaElt.clientHeight);
+    drawBackground(BLOCK_MARGIN, top - BLOCK_PADDING, formulaElt.clientWidth, formulaElt.clientHeight);
 
-    ctx.fillStyle = "white";
     /* HTML tags cannot be used when drawing text on a canvas,
      * so we need to handle manually tags such as br and sub. */
     formulaElt.innerHTML.split(/\s*<br\/?>\s*/g).forEach((str) => {
@@ -167,10 +169,8 @@ function drawToCanvas(ctx: CanvasRenderingContext2D) {
 
     top += 1 * FONT_SIZE;
 
-    ctx.fillStyle = "red";
-    ctx.fillRect(BLOCK_MARGIN, top - BLOCK_PADDING, parametersElt.clientWidth, parametersElt.clientHeight);
+    drawBackground(BLOCK_MARGIN, top - BLOCK_PADDING, parametersElt.clientWidth, parametersElt.clientHeight);
 
-    ctx.fillStyle = "white";
     parametersElt.innerHTML.split(/\s*<br\/?>\s*/g).forEach((line) => {
         ctx.fillText(line, blockLeft, top);
         top += 1 * fontSize;

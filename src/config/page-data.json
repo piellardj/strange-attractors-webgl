@@ -107,11 +107,37 @@
                     "max": 1,
                     "value": 0.9,
                     "step": 0.01
+                }
+            ]
+        },
+        {
+            "title": "Download",
+            "controls": [
+                {
+                    "type": "tabs",
+                    "title": "Image size",
+                    "id": "download-size",
+                    "unique": true,
+                    "options": [
+                        {
+                            "value": "1024",
+                            "label": "1024",
+                            "checked": true
+                        },
+                        {
+                            "value": "2048",
+                            "label": "2048"
+                        },
+                        {
+                            "value": "4096",
+                            "label": "4096"
+                        }
+                    ]
                 },
                 {
                     "type": "file-download",
                     "id": "file-download-id",
-                    "label": "Download"
+                    "label": "Download image"
                 }
             ]
         }
