@@ -50,7 +50,7 @@ class FractalDreamAttractor extends Attractor {
 
             this.x = data[2 * i + 0];
             this.y = data[2 * i + 1];
-        }
+        };
 
         this.fillData(nbPoints, computeNextPoint);
 

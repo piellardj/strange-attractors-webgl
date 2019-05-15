@@ -90,18 +90,18 @@ function main() {
         const canvasGL = Canvas.getCanvas();
         function isolateCanvasGL() {
             Canvas.showLoader(true);
-    
+
             canvasGL.style.position = "absolute";
             canvasGL.style.width = figureSize + "px";
             canvasGL.style.height = figureSize + "px";
             canvasGL.width = figureSize;
             canvasGL.height = figureSize;
-    
+
             GLCanvas.adjustSize();
             Viewport.setFullCanvas(gl);
             gl.clear(gl.COLOR_BUFFER_BIT);
         }
-    
+
         function restoreCanvasGL() {
             canvasGL.style.position = "";
             canvasGL.style.width = "";

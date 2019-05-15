@@ -2,45 +2,13 @@ import { gl } from "../gl-utils/gl-canvas";
 import Shader from "../gl-utils/shader";
 import * as ShaderManager from "../gl-utils/shader-manager";
 import VBO from "../gl-utils/vbo";
-import { Parameters } from "../parameters";
 
 import * as Infos from "../infos";
+import { Parameters } from "../parameters";
+import Boundaries from "./boundaries";
 
 let shader: Shader = null;
 let pointsVBO: VBO = null;
-
-class Boundaries {
-    public minX: number;
-    public maxX: number;
-    public minY: number;
-    public maxY: number;
-
-    public constructor() {
-        this.minX = 0;
-        this.maxX = 0;
-        this.minY = 0;
-        this.maxY = 0;
-    }
-
-    public get center(): number[] {
-        return [
-            0.5 * (this.maxX + this.minX),
-            0.5 * (this.maxY + this.minY),
-        ];
-    }
-
-    public get maxDimension(): number {
-        return Math.max(this.maxX - this.minX, this.maxY - this.minY);
-    }
-
-    public includePoint(x: number, y: number) {
-        this.minX = Math.min(this.minX, x);
-        this.minY = Math.min(this.minY, y);
-
-        this.maxX = Math.max(this.maxX, x);
-        this.maxY = Math.max(this.maxY, y);
-    }
-}
 
 declare const Canvas: any;
 
@@ -118,7 +86,7 @@ abstract class Attractor {
     /* Should update minX, maxX, minY and maxY */
     protected abstract computeXPoints(nbPoints: number): Float32Array;
 
-    protected fillData(nbPoints: number,computeNextPoint: (pointIndex: number) => void) {
+    protected fillData(nbPoints: number, computeNextPoint: (pointIndex: number) => void) {
         /* ignore the first 1000 ones */
         for (let i = 0; i < 100; ++i) {
             computeNextPoint(0);
