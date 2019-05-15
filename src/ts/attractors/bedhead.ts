@@ -37,36 +37,19 @@ class BeadheadAttractor extends Attractor {
         const a = Parameters.a;
         const b = Parameters.b;
 
-        let x = Math.random() * 2 - 1;
-        let y = Math.random() * 2 - 1;
+        this.x = Math.random() * 2 - 1;
+        this.y = Math.random() * 2 - 1;
 
-        function computeNextPoint(i: number) {
-            data[2 * i + 0] = Math.sin(x * y / b) + Math.cos(a * x - y);
-            data[2 * i + 1] = x + Math.sin(y) / b;
+        const computeNextPoint = (i: number) => {
+            data[2 * i + 0] = Math.sin(this.x * this.y / b) + Math.cos(a * this.x - this.y);
+            data[2 * i + 1] = this.x + Math.sin(this.y) / b;
 
-            x = data[2 * i + 0];
-            y = data[2 * i + 1];
+            this.x = data[2 * i + 0];
+            this.y = data[2 * i + 1];
         }
 
-        /* ignore the first 1000 ones */
-        for (let i = 0; i < 100; ++i) {
-            computeNextPoint(0);
-        }
+        this.fillData(nbPoints, computeNextPoint);
 
-        if (this.boundaries === null) {
-            this.boundaries = new Boundaries();
-            this.boundaries.includePoint(x, y);
-
-            for (let i = 0; i < nbPoints; ++i) {
-                computeNextPoint(i);
-                this.boundaries.includePoint(x, y);
-            }
-        } else {
-            for (let i = 0; i < nbPoints; ++i) {
-                computeNextPoint(i);
-            }
-        }
-        
         return data;
     }
 }

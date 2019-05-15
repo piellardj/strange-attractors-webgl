@@ -46,6 +46,8 @@ declare const Canvas: any;
 
 abstract class Attractor {
     protected boundaries: Boundaries;
+    protected x: number;
+    protected y: number;
 
     constructor() {
         if (shader === null) {
@@ -115,6 +117,26 @@ abstract class Attractor {
 
     /* Should update minX, maxX, minY and maxY */
     protected abstract computeXPoints(nbPoints: number): Float32Array;
+
+    protected fillData(nbPoints: number,computeNextPoint: (pointIndex: number) => void) {
+        /* ignore the first 1000 ones */
+        for (let i = 0; i < 100; ++i) {
+            computeNextPoint(0);
+        }
+
+        if (this.boundaries === null) {
+            this.boundaries = new Boundaries();
+
+            for (let i = 0; i < nbPoints; ++i) {
+                computeNextPoint(i);
+                this.boundaries.includePoint(this.x, this.y);
+            }
+        } else {
+            for (let i = 0; i < nbPoints; ++i) {
+                computeNextPoint(i);
+            }
+        }
+    }
 }
 
 export {

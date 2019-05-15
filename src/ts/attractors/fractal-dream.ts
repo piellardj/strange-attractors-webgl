@@ -41,35 +41,18 @@ class FractalDreamAttractor extends Attractor {
         const c = Parameters.c;
         const d = Parameters.d;
 
-        let x = Math.random() * 2 - 1;
-        let y = Math.random() * 2 - 1;
+        this.x = Math.random() * 2 - 1;
+        this.y = Math.random() * 2 - 1;
 
-        function computeNextPoint(i: number) {
-            data[2 * i + 0] = Math.sin(b * y) + c * Math.sin(b * x);
-            data[2 * i + 1] = Math.sin(a * x) + d * Math.sin(a * y);
+        const computeNextPoint = (i: number) => {
+            data[2 * i + 0] = Math.sin(b * this.y) + c * Math.sin(b * this.x);
+            data[2 * i + 1] = Math.sin(a * this.x) + d * Math.sin(a * this.y);
 
-            x = data[2 * i + 0];
-            y = data[2 * i + 1];
+            this.x = data[2 * i + 0];
+            this.y = data[2 * i + 1];
         }
 
-        /* ignore the first 1000 ones */
-        for (let i = 0; i < 100; ++i) {
-            computeNextPoint(0);
-        }
-
-        if (this.boundaries === null) {
-            this.boundaries = new Boundaries();
-            this.boundaries.includePoint(x, y);
-
-            for (let i = 0; i < nbPoints; ++i) {
-                computeNextPoint(i);
-                this.boundaries.includePoint(x, y);
-            }
-        } else {
-            for (let i = 0; i < nbPoints; ++i) {
-                computeNextPoint(i);
-            }
-        }
+        this.fillData(nbPoints, computeNextPoint);
 
         return data;
     }
