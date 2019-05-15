@@ -2,7 +2,7 @@ import * as GLCanvas from "./gl-utils/gl-canvas";
 import { gl } from "./gl-utils/gl-canvas";
 import Viewport from "./gl-utils/viewport";
 
-import { Attractor } from "./attractors/attractor";
+import Attractor from "./attractors/attractor";
 import BedHeadAttractor from "./attractors/bedhead";
 import CliffordAttractor from "./attractors/clifford";
 import DeJongAttractor from "./attractors/de-jong";

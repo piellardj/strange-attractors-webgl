@@ -1,5 +1,5 @@
 import { ControlsID, Parameters } from "../parameters";
-import { Attractor, Boundaries } from "./attractor";
+import Attractor from "./attractor";
 
 declare const Controls: any;
 

@@ -75,7 +75,6 @@ abstract class Attractor {
 
     public drawXPoints(nbPoints: number): void {
         if (shader) {
-            this.boundaries = null;
             const data = this.computeXPoints(nbPoints);
             pointsVBO.setData(data);
 
@@ -106,6 +105,7 @@ abstract class Attractor {
         Infos.setTitle(this.name);
         Infos.setFormula(this.formula);
         Infos.setParameters(this.parameters);
+        this.boundaries = null;
     }
 
     /* For infos block display */
@@ -139,7 +139,4 @@ abstract class Attractor {
     }
 }
 
-export {
-    Attractor,
-    Boundaries,
-};
+export default Attractor;
