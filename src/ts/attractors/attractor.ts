@@ -4,16 +4,48 @@ import * as ShaderManager from "../gl-utils/shader-manager";
 import VBO from "../gl-utils/vbo";
 import { Parameters } from "../parameters";
 
+import * as Infos from "../infos";
+
 let shader: Shader = null;
 let pointsVBO: VBO = null;
+
+class Boundaries {
+    public minX: number;
+    public maxX: number;
+    public minY: number;
+    public maxY: number;
+
+    public constructor() {
+        this.minX = 0;
+        this.maxX = 0;
+        this.minY = 0;
+        this.maxY = 0;
+    }
+
+    public get center(): number[] {
+        return [
+            0.5 * (this.maxX + this.minX),
+            0.5 * (this.maxY + this.minY),
+        ];
+    }
+
+    public get maxDimension(): number {
+        return Math.max(this.maxX - this.minX, this.maxY - this.minY);
+    }
+
+    public includePoint(x: number, y: number) {
+        this.minX = Math.min(this.minX, x);
+        this.minY = Math.min(this.minY, y);
+
+        this.maxX = Math.max(this.maxX, x);
+        this.maxY = Math.max(this.maxY, y);
+    }
+}
 
 declare const Canvas: any;
 
 abstract class Attractor {
-    protected minX: number;
-    protected maxX: number;
-    protected minY: number;
-    protected maxY: number;
+    protected boundaries: Boundaries;
 
     constructor() {
         if (shader === null) {
@@ -35,11 +67,13 @@ abstract class Attractor {
             const fillData = new Float32Array(2);
             pointsVBO = new VBO(gl, fillData, 2, gl.FLOAT, false);
         }
+
+        this.boundaries = null;
     }
 
     public drawXPoints(nbPoints: number): void {
         if (shader) {
-            this.resetBoundaries();
+            this.boundaries = null;
             const data = this.computeXPoints(nbPoints);
             pointsVBO.setData(data);
 
@@ -50,11 +84,8 @@ abstract class Attractor {
             shader.a["aCoords"].VBO = pointsVBO;
             const q = 1 - 254 / 255 * Parameters.quality;
             shader.u["uColor"].value = [q, q, q, 1];
-            shader.u["uCenter"].value = [
-                0.5 * (this.maxX + this.minX),
-                0.5 * (this.maxY + this.minY),
-            ];
-            const maxDimension = 0.1 + Math.max(this.maxX - this.minX, this.maxY - this.minY);
+            shader.u["uCenter"].value = this.boundaries.center;
+            const maxDimension = 0.5 + this.boundaries.maxDimension;
             shader.u["uScale"].value = [
                 2 / maxDimension / Math.max(aspectRatio, 1),
                 2 / maxDimension * Math.min(aspectRatio, 1),
@@ -68,6 +99,13 @@ abstract class Attractor {
         }
     }
 
+    public reset(): void {
+        this.toggleParametersVisibility();
+        Infos.setTitle(this.name);
+        Infos.setFormula(this.formula);
+        Infos.setParameters(this.parameters);
+    }
+
     /* For infos block display */
     public abstract get name(): string;
     public abstract get formula(): string;
@@ -77,13 +115,9 @@ abstract class Attractor {
 
     /* Should update minX, maxX, minY and maxY */
     protected abstract computeXPoints(nbPoints: number): Float32Array;
-
-    private resetBoundaries(): void {
-        this.minX = 0;
-        this.maxX = 0;
-        this.minY = 0;
-        this.maxY = 0;
-    }
 }
 
-export default Attractor;
+export {
+    Attractor,
+    Boundaries,
+};

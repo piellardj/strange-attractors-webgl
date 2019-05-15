@@ -1,5 +1,5 @@
 import { ControlsID, Parameters } from "../parameters";
-import Attractor from "./attractor";
+import { Attractor, Boundaries } from "./attractor";
 
 declare const Controls: any;
 
@@ -44,28 +44,33 @@ class CliffordAttractor extends Attractor {
         let x = Math.random() * 2 - 1;
         let y = Math.random() * 2 - 1;
 
-        /* ignore the first 1000 ones */
-        for (let i = 0; i < 100; ++i) {
-            data[0] = Math.sin(a * y) + c * Math.cos(a * x);
-            data[1] = Math.sin(c * x) + d * Math.cos(b * y);
-
-            x = data[0];
-            y = data[1];
-        }
-
-        for (let i = 0; i < nbPoints; ++i) {
+        function computeNextPoint(i: number) {
             data[2 * i + 0] = Math.sin(a * y) + c * Math.cos(a * x);
             data[2 * i + 1] = Math.sin(c * x) + d * Math.cos(b * y);
 
             x = data[2 * i + 0];
             y = data[2 * i + 1];
-
-            this.minX = Math.min(this.minX, x);
-            this.minY = Math.min(this.minY, y);
-
-            this.maxX = Math.max(this.maxX, x);
-            this.maxY = Math.max(this.maxY, y);
         }
+
+        /* ignore the first 1000 ones */
+        for (let i = 0; i < 100; ++i) {
+            computeNextPoint(0);
+        }
+
+        if (this.boundaries === null) {
+            this.boundaries = new Boundaries();
+            this.boundaries.includePoint(x, y);
+
+            for (let i = 0; i < nbPoints; ++i) {
+                computeNextPoint(i);
+                this.boundaries.includePoint(x, y);
+            }
+        } else {
+            for (let i = 0; i < nbPoints; ++i) {
+                computeNextPoint(i);
+            }
+        }
+
         return data;
     }
 }

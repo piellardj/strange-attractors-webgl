@@ -2,7 +2,7 @@ import * as GLCanvas from "./gl-utils/gl-canvas";
 import { gl } from "./gl-utils/gl-canvas";
 import Viewport from "./gl-utils/viewport";
 
-import Attractor from "./attractors/attractor";
+import { Attractor } from "./attractors/attractor";
 import BedHeadAttractor from "./attractors/bedhead";
 import CliffordAttractor from "./attractors/clifford";
 import DeJongAttractor from "./attractors/de-jong";
@@ -47,10 +47,7 @@ function main() {
             gl.clear(gl.COLOR_BUFFER_BIT);
 
             attractor = attractors[Parameters.attractor];
-            attractor.toggleParametersVisibility();
-            Infos.setTitle(attractor.name);
-            Infos.setFormula(attractor.formula);
-            Infos.setParameters(attractor.parameters);
+            attractor.reset();
         }
 
         if (Parameters.autorun) {
