@@ -25,6 +25,7 @@ const controlId = {
     D: "d-range-id",
     AUTORUN: "autorun-checkbox-id",
     FORMULA: "formula-checkbox-id",
+    INDICATORS: "indicators-checkbox-id",
     QUALITY: "quality-range-id",
     DOWNLOAD_SIZE: "download-size",
     DOWNLOAD: "file-download-id",
@@ -141,6 +142,11 @@ Range.addObserver(controlId.QUALITY, (newvalue: number) => {
     callObservers(observers.clear);
 });
 quality = Range.getValue(controlId.QUALITY);
+
+Checkbox.addObserver(controlId.INDICATORS, (checked: number) => {
+    Canvas.setIndicatorsVisibility(checked);
+});
+Canvas.setIndicatorsVisibility(Checkbox.isChecked(controlId.INDICATORS));
 
 export {
     attractorNames,

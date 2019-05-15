@@ -100,6 +100,12 @@
                     "checked": true
                 },
                 {
+                    "title": "Show indicators",
+                    "type": "checkbox",
+                    "id": "indicators-checkbox-id",
+                    "checked": true
+                },
+                {
                     "title": "Quality",
                     "type": "range",
                     "id": "quality-range-id",
