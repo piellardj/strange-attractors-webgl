@@ -80,8 +80,7 @@ function main() {
     FileControl.addDownloadObserver(ControlsID.DOWNLOAD, () => {
         const figureSize = +Tabs.getValues(ControlsID.DOWNLOAD_SIZE)[0];
 
-        const luminosity = totalPoints / (gl.canvas.width * gl.canvas.height);
-        const nbPointsNeeded = luminosity * figureSize * figureSize;
+        const nbPointsNeeded = Parameters.computeNbPointsNeeded([figureSize, figureSize]);
 
         const canvas2D = document.createElement("canvas");
         const ctx2D = canvas2D.getContext("2d");
