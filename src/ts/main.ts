@@ -36,6 +36,7 @@ function main() {
     }
     setTotalPoints(0);
 
+    const STEP_SIZE = Math.pow(2, 16);
     let attractor: Attractor;
     function mainLoop() {
         if (needToAdjustCanvas) {
@@ -50,8 +51,7 @@ function main() {
             attractor.reset();
         }
 
-        if (Parameters.autorun) {
-            const STEP_SIZE = Math.pow(2, 16);
+        if (totalPoints < Parameters.nbPointsNeeded) {
             setTotalPoints(totalPoints + STEP_SIZE);
             attractor.drawXPoints(STEP_SIZE);
         }

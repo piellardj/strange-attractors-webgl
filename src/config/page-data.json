@@ -88,10 +88,22 @@
             "title": "Rendering",
             "controls": [
                 {
-                    "title": "Keep drawing",
-                    "type": "checkbox",
-                    "id": "autorun-checkbox-id",
-                    "checked": true
+                    "title": "Intensity",
+                    "type": "range",
+                    "id": "intensity-range-id",
+                    "min": 1,
+                    "max": 100,
+                    "value": 30,
+                    "step": 1
+                },
+                {
+                    "title": "Quality",
+                    "type": "range",
+                    "id": "quality-range-id",
+                    "min": 0,
+                    "max": 1,
+                    "value": 0.9,
+                    "step": 0.01
                 },
                 {
                     "title": "Show formula",
@@ -104,15 +116,6 @@
                     "type": "checkbox",
                     "id": "indicators-checkbox-id",
                     "checked": true
-                },
-                {
-                    "title": "Quality",
-                    "type": "range",
-                    "id": "quality-range-id",
-                    "min": 0,
-                    "max": 1,
-                    "value": 0.9,
-                    "step": 0.01
                 }
             ]
         },

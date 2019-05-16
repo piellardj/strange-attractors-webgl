@@ -51,7 +51,7 @@ abstract class Attractor {
 
             /* tslint:disable:no-string-literal */
             shader.a["aCoords"].VBO = pointsVBO;
-            const q = 1 - 254 / 255 * Parameters.quality;
+            const q = Parameters.quality;
             shader.u["uColor"].value = [q, q, q, 1];
             shader.u["uCenter"].value = this.boundaries.center;
             const maxDimension = 0.5 + this.boundaries.maxDimension;

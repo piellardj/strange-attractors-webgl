@@ -23,9 +23,9 @@ const controlId = {
     B: "b-range-id",
     C: "c-range-id",
     D: "d-range-id",
-    AUTORUN: "autorun-checkbox-id",
     FORMULA: "formula-checkbox-id",
     INDICATORS: "indicators-checkbox-id",
+    INTENSITY: "intensity-range-id",
     QUALITY: "quality-range-id",
     DOWNLOAD_SIZE: "download-size",
     DOWNLOAD: "file-download-id",
@@ -52,8 +52,13 @@ let b: number;
 let c: number;
 let d: number;
 
-let autorun: boolean;
+let intensity: number;
 let quality: number;
+let nbPointsNeeded: number;
+
+function updateNbPointsNeeded() {
+    nbPointsNeeded = Parameters.computeNbPointsNeeded(Canvas.getSize());
+}
 
 /* === INTERFACE ====================================================== */
 class Parameters {
@@ -81,8 +86,8 @@ class Parameters {
         return d;
     }
 
-    public static get autorun(): boolean {
-        return autorun;
+    public static get nbPointsNeeded(): number {
+        return nbPointsNeeded;
     }
 
     public static get quality(): number {
@@ -91,6 +96,11 @@ class Parameters {
 
     public static get clearObservers(): GenericObserver[] {
         return observers.clear;
+    }
+
+    public static computeNbPointsNeeded(canvasSize: number[]): number {
+        const minDimension = Math.min(canvasSize[0], canvasSize[1]);
+        return intensity / (256 * quality) * minDimension * minDimension;
     }
 
     private constructor() {}
@@ -127,26 +137,36 @@ Range.addObserver(controlId.D, (newvalue: number) => {
 });
 d = Range.getValue(controlId.D);
 
-Checkbox.addObserver(controlId.AUTORUN, (checked: boolean) => {
-    autorun = checked;
-});
-autorun = Checkbox.isChecked(controlId.AUTORUN);
-
 Checkbox.addObserver(controlId.FORMULA, (checked: boolean) => {
     Infos.setVisibility(checked);
 });
 Infos.setVisibility(Checkbox.isChecked(controlId.FORMULA));
 
+Range.addObserver(controlId.INTENSITY, (newvalue: number) => {
+    const needToClear = (newvalue < intensity);
+    intensity = newvalue;
+    updateNbPointsNeeded();
+
+    if (needToClear) {
+        callObservers(observers.clear);
+    }
+});
+intensity = Range.getValue(controlId.INTENSITY);
+
 Range.addObserver(controlId.QUALITY, (newvalue: number) => {
-    quality = newvalue;
+    quality = 1 - (254 / 255) * newvalue;
+    updateNbPointsNeeded();
     callObservers(observers.clear);
 });
-quality = Range.getValue(controlId.QUALITY);
+quality = 1 - (254 / 255) * Range.getValue(controlId.QUALITY);
 
 Checkbox.addObserver(controlId.INDICATORS, (checked: number) => {
     Canvas.setIndicatorsVisibility(checked);
 });
 Canvas.setIndicatorsVisibility(Checkbox.isChecked(controlId.INDICATORS));
+
+Canvas.Observers.canvasResize.push(updateNbPointsNeeded);
+updateNbPointsNeeded();
 
 export {
     attractorNames,
