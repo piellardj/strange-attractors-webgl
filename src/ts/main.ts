@@ -51,9 +51,11 @@ function main() {
             attractor.reset();
         }
 
+        console.log(Parameters.nbPointsNeeded);
         if (totalPoints < Parameters.nbPointsNeeded) {
-            setTotalPoints(totalPoints + STEP_SIZE);
-            attractor.drawXPoints(STEP_SIZE);
+            if (attractor.drawXPoints(STEP_SIZE)) {
+                setTotalPoints(totalPoints + STEP_SIZE);
+            }
         }
 
         requestAnimationFrame(mainLoop);

@@ -41,7 +41,7 @@ abstract class Attractor {
         this.boundaries = null;
     }
 
-    public drawXPoints(nbPoints: number): void {
+    public drawXPoints(nbPoints: number): boolean {
         if (shader) {
             const data = this.computeXPoints(nbPoints);
             pointsVBO.setData(data);
@@ -65,7 +65,10 @@ abstract class Attractor {
             shader.bindUniformsAndAttributes();
 
             gl.drawArrays(gl.POINTS, 0, nbPoints);
+            return true;
         }
+
+        return false;
     }
 
     public reset(): void {
