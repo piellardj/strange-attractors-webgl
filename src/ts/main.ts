@@ -51,7 +51,6 @@ function main() {
             attractor.reset();
         }
 
-        console.log(Parameters.nbPointsNeeded);
         if (totalPoints < Parameters.nbPointsNeeded) {
             if (attractor.drawXPoints(STEP_SIZE)) {
                 setTotalPoints(totalPoints + STEP_SIZE);
