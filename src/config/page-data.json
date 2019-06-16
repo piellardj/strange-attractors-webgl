@@ -106,6 +106,23 @@
                     "step": 0.01
                 },
                 {
+                    "type": "tabs",
+                    "title": "Compositing",
+                    "id": "compositing",
+                    "unique": true,
+                    "options": [
+                        {
+                            "value": "dark",
+                            "label": "Dark"
+                        },
+                        {
+                            "value": "light",
+                            "label": "Light",
+                            "checked": true
+                        }
+                    ]
+                },
+                {
                     "title": "Show formula",
                     "type": "checkbox",
                     "id": "formula-checkbox-id",

@@ -16,6 +16,11 @@ const attractorNames = {
     FractalDream: "fractal-dream",
 };
 
+const compositingNames = {
+    dark: "dark",
+    light: "light",
+};
+
 /* === IDs ============================================================ */
 const controlId = {
     ATTRACTOR: "attractor-picker-id",
@@ -27,6 +32,7 @@ const controlId = {
     INDICATORS: "indicators-checkbox-id",
     INTENSITY: "intensity-range-id",
     QUALITY: "quality-range-id",
+    COMPOSITING: "compositing",
     DOWNLOAD_SIZE: "download-size",
     DOWNLOAD: "file-download-id",
 };
@@ -54,6 +60,7 @@ let d: number;
 
 let intensity: number;
 let quality: number;
+let compositing: string;
 let nbPointsNeeded: number;
 
 function updateNbPointsNeeded() {
@@ -92,6 +99,10 @@ class Parameters {
 
     public static get quality(): number {
         return quality;
+    }
+
+    public static get compositing(): string {
+        return compositing;
     }
 
     public static get clearObservers(): GenericObserver[] {
@@ -160,6 +171,12 @@ Range.addObserver(controlId.QUALITY, (newvalue: number) => {
 });
 quality = 1 - (254 / 255) * Range.getValue(controlId.QUALITY);
 
+Tabs.addObserver(controlId.COMPOSITING, (newValue: string[]) => {
+    compositing = "" + newValue[0];
+    callObservers(observers.clear);
+});
+compositing = "" + Tabs.getValues(controlId.COMPOSITING);
+
 Checkbox.addObserver(controlId.INDICATORS, (checked: number) => {
     Canvas.setIndicatorsVisibility(checked);
 });
@@ -170,6 +187,7 @@ updateNbPointsNeeded();
 
 export {
     attractorNames,
+    compositingNames,
     controlId as ControlsID,
     Parameters,
 };

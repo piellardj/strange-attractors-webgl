@@ -1,6 +1,5 @@
 import * as GLCanvas from "./gl-utils/gl-canvas";
 import { gl } from "./gl-utils/gl-canvas";
-import Viewport from "./gl-utils/viewport";
 
 import Attractor from "./attractors/attractor";
 import BedHeadAttractor from "./attractors/bedhead";
@@ -8,10 +7,11 @@ import CliffordAttractor from "./attractors/clifford";
 import DeJongAttractor from "./attractors/de-jong";
 import FractalDreamAttractor from "./attractors/fractal-dream";
 import * as Infos from "./infos";
-import { attractorNames, ControlsID, Parameters } from "./parameters";
+import { attractorNames, compositingNames, ControlsID, Parameters } from "./parameters";
 
 import Compositing from "./compositing/compositing";
 import CompositingDark from "./compositing/compositing-dark";
+import CompositingLight from "./compositing/compositing-light";
 
 declare const Canvas: any;
 declare const FileControl: any;
@@ -31,8 +31,10 @@ function main() {
     attractors[attractorNames.Clifford] = new CliffordAttractor();
     attractors[attractorNames.DeJong] = new DeJongAttractor();
     attractors[attractorNames.FractalDream] = new FractalDreamAttractor();
-
-    const compositing: Compositing = new CompositingDark();
+    
+    const compositings = {};
+    compositings[compositingNames.dark] = new CompositingDark();
+    compositings[compositingNames.light] = new CompositingLight();
 
     let totalPoints: number;
     function setTotalPoints(total: number): void {
@@ -43,6 +45,7 @@ function main() {
 
     const STEP_SIZE = Math.pow(2, 16);
     let attractor: Attractor;
+    let compositing: Compositing;
     function mainLoop() {
         if (needToAdjustCanvas) {
             needToAdjustCanvas = false;
@@ -51,6 +54,7 @@ function main() {
             attractor = attractors[Parameters.attractor];
             attractor.reset();
 
+            compositing = compositings[Parameters.compositing];
             compositing.initialize();
         }
 
@@ -98,9 +102,7 @@ function main() {
             canvasGL.width = figureSize;
             canvasGL.height = figureSize;
 
-            GLCanvas.adjustSize();
-            Viewport.setFullCanvas(gl);
-            gl.clear(gl.COLOR_BUFFER_BIT);
+            compositing.initialize();
         }
 
         function restoreCanvasGL() {
@@ -116,10 +118,12 @@ function main() {
 
         let nbPoints = 0;
         const stepSize = Math.pow(2, 18);
+        compositing.bindTopLayer();
         while (nbPoints < nbPointsNeeded) {
             nbPoints += stepSize;
             attractor.drawXPoints(stepSize);
         }
+        compositing.compose();
 
         ctx2D.fillStyle = "black";
         ctx2D.fillRect(0, 0, canvas2D.width, canvas2D.height);
