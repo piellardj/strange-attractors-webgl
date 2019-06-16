@@ -17,8 +17,10 @@ class CompositingDark extends CompositingBase {
         gl.clear(gl.COLOR_BUFFER_BIT);
     }
 
+    /* tslint:disable:no-empty */
     public bindTopLayer(): void {}
     public compose(): void {}
+    /* tslint:enable:no-empty */
 }
 
 export default CompositingDark;

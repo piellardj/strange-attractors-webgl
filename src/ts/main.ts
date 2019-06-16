@@ -31,7 +31,7 @@ function main() {
     attractors[attractorNames.Clifford] = new CliffordAttractor();
     attractors[attractorNames.DeJong] = new DeJongAttractor();
     attractors[attractorNames.FractalDream] = new FractalDreamAttractor();
-    
+
     const compositings = {};
     compositings[compositingNames.dark] = new CompositingDark();
     compositings[compositingNames.light] = new CompositingLight();
