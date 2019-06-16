@@ -10,6 +10,9 @@ import FractalDreamAttractor from "./attractors/fractal-dream";
 import * as Infos from "./infos";
 import { attractorNames, ControlsID, Parameters } from "./parameters";
 
+import Compositing from "./compositing/compositing";
+import CompositingDark from "./compositing/compositing-dark";
+
 declare const Canvas: any;
 declare const FileControl: any;
 declare const Tabs: any;
@@ -29,6 +32,8 @@ function main() {
     attractors[attractorNames.DeJong] = new DeJongAttractor();
     attractors[attractorNames.FractalDream] = new FractalDreamAttractor();
 
+    const compositing: Compositing = new CompositingDark();
+
     let totalPoints: number;
     function setTotalPoints(total: number): void {
         totalPoints = total;
@@ -43,19 +48,20 @@ function main() {
             needToAdjustCanvas = false;
             setTotalPoints(0);
 
-            GLCanvas.adjustSize();
-            Viewport.setFullCanvas(gl);
-            gl.clear(gl.COLOR_BUFFER_BIT);
-
             attractor = attractors[Parameters.attractor];
             attractor.reset();
+
+            compositing.initialize();
         }
 
         if (totalPoints < Parameters.nbPointsNeeded) {
+            compositing.bindTopLayer();
             if (attractor.drawXPoints(STEP_SIZE)) {
                 setTotalPoints(totalPoints + STEP_SIZE);
             }
         }
+
+        compositing.compose();
 
         requestAnimationFrame(mainLoop);
     }
@@ -69,11 +75,6 @@ function main() {
         if (!GLCanvas.initGL(glParams)) {
             return;
         }
-
-        gl.enable(gl.BLEND);
-        gl.clearColor(0, 0, 0, 1);
-        gl.blendEquation(gl.FUNC_ADD);
-        gl.blendFunc(gl.ONE, gl.ONE);
     }
 
     FileControl.addDownloadObserver(ControlsID.DOWNLOAD, () => {
