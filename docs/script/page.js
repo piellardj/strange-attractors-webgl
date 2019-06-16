@@ -204,6 +204,12 @@ const Canvas = (function() {
         }, false);
     }
 
+    document.addEventListener("keydown", function(event) {
+        if (event.keyCode == 27) {
+            Canvas.toggleFullscreen(false);
+        }
+    });
+
     /* Bind canvas events */
     if (canvas) {
         /**
@@ -396,6 +402,21 @@ const Canvas = (function() {
         }, {passive: false});
     }
 
+    /* Indicators cache */
+    const indicatorSpans = {};
+
+    /**
+     * @param {string} id
+     * @return {HTMLSpanElement}
+     */
+    function getIndicatorSpan(id) {
+        if (!indicatorSpans[id]) {
+            const fullId = id + "-indicator-id";
+            indicatorSpans[id] = getElementBySelector("#" + fullId + " span");
+        }
+        return indicatorSpans[id];
+    }
+
     return Object.freeze({
         Observers: Object.freeze({
             canvasResize: canvasResizeObservers,
@@ -425,6 +446,13 @@ const Canvas = (function() {
         },
 
         /**
+         * @return {Object} Html canvas container node
+         */
+        getCanvasContainer: function() {
+            return canvasContainer;
+        },
+
+        /**
          * @return {number[]}
          */
         getSize: getCanvasSize,
@@ -433,7 +461,8 @@ const Canvas = (function() {
          * @return {number[]}
          */
         getMousePosition: function() {
-            return lastMousePosition;
+            // return copy of array
+            return lastMousePosition.slice();
         },
 
         /**
@@ -456,8 +485,7 @@ const Canvas = (function() {
          * @return {void}
          */
         setIndicatorText: function(id, text) {
-            const fullId = id + "-indicator-id";
-            const indicator = getElementBySelector("#" + fullId + " span");
+            const indicator = getIndicatorSpan(id);
             if (indicator) {
                 indicator.innerText = text;
             }
@@ -517,7 +545,14 @@ const Canvas = (function() {
                 const needToUpdate = fullscreen != fullscreenCheckbox.checked;
                 if (needToUpdate) {
                     fullscreenCheckbox.checked = fullscreen;
-                    fullscreenCheckbox.onchange();
+
+                    if (typeof window.CustomEvent === "function" ) {
+                        fullscreenCheckbox.dispatchEvent(new CustomEvent("change"));
+                    } else if (typeof CustomEvent.prototype.initCustomEvent === "function") {
+                        const changeEvent = document.createEvent("CustomEvent");
+                        changeEvent.initCustomEvent("change", false, false, undefined);
+                        fullscreenCheckbox.dispatchEvent(changeEvent);
+                    }
                 }
             }
         },
@@ -1048,8 +1083,10 @@ const FileControl = (function() {
             const input = getUploadInputById(label.htmlFor);
             if (input) {
                 const span = label.querySelector("span");
-                input.addEventListener("change", function(event) {
-                    span.innerText = truncate(input.files[0].name);
+                input.addEventListener("change", function() {
+                    if (input.files.length === 1) {
+                        span.innerText = truncate(input.files[0].name);
+                    }
                 }, false);
             }
         });
@@ -1084,7 +1121,9 @@ const FileControl = (function() {
             if (input) {
                 input.addEventListener("change", function() {
                     event.stopPropagation();
-                    observer(input.files);
+                    if (input.files.length === 1) {
+                        observer(input.files);
+                    }
                 }, false);
                 return true;
             }
