@@ -56,6 +56,8 @@ function main() {
 
             compositing = compositings[Parameters.compositing];
             compositing.initialize();
+
+            Infos.setColors(compositing.foregroundColor, compositing.backgroundColor);
         }
 
         if (totalPoints < Parameters.nbPointsNeeded) {
@@ -125,7 +127,7 @@ function main() {
         }
         compositing.compose();
 
-        ctx2D.fillStyle = "black";
+        ctx2D.fillStyle = compositing.backgroundColor;
         ctx2D.fillRect(0, 0, canvas2D.width, canvas2D.height);
         ctx2D.drawImage(gl.canvas, 0.5 * (canvas2D.width - figureSize), 0, figureSize, figureSize);
         restoreCanvasGL();

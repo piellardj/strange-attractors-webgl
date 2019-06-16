@@ -7,6 +7,9 @@ const TITLE_FONT_SIZE = 24;
 const FONT_SIZE = 20;
 const SUB_FONT_SIZE = 16;
 
+let fontColor: string = "blue";
+let backgroundColor: string = "red";
+
 (function registerFont() {
     const fontLink = document.createElement("link");
     fontLink.href = "https://fonts.googleapis.com/css?family=" + FONT_NAME.replace(" ", "+");
@@ -14,16 +17,16 @@ const SUB_FONT_SIZE = 16;
     document.head.appendChild(fontLink);
 })();
 
+let colorsStylesheet: any; // really a StyleSheet but Typescript definitions are incomplete
 (function registerCss() {
     const infosCss =
-        `.infos {
+    `.infos {
         position: absolute;
         bottom: 0;
         left: 0;
         line-height: 1em;
         margin: ` + BLOCK_MARGIN + `px;
         text-align: left;
-        color: white;
         font-family: '` + FONT_NAME + `', cursive;
         font-size: ` + FONT_SIZE + `px;
     }
@@ -32,7 +35,6 @@ const SUB_FONT_SIZE = 16;
     }
     .infos div {
         padding: ` + BLOCK_PADDING + `px;
-        background: black;
     }
     .infos .attractor-name {
         display: inline-block;
@@ -50,7 +52,13 @@ const SUB_FONT_SIZE = 16;
         infosStyle.appendChild(document.createTextNode(infosCss));
     }
     document.head.appendChild(infosStyle);
+
+    const infosColorsStyle = document.createElement("style");
+    document.head.appendChild(infosColorsStyle);
+    colorsStylesheet = infosColorsStyle.sheet;
 })();
+
+setColors("white", "black");
 
 const titleElt = document.createElement("div");
 titleElt.className = "attractor-name";
@@ -67,6 +75,17 @@ setVisibility(false);
 
 const canvasContainer = (Canvas.getCanvas() as HTMLElement).parentElement;
 canvasContainer.appendChild(infosBlockElt);
+
+function setColors(newFontColor: string, newBackgroundColor: string) {
+    fontColor = newFontColor;
+    backgroundColor = newBackgroundColor;
+
+    while (colorsStylesheet.cssRules.length > 0) {
+        colorsStylesheet.deleteRule(0);
+    }
+    colorsStylesheet.insertRule(".infos { color: " + fontColor + "; }", 0);
+    colorsStylesheet.insertRule(".infos div { background: " + backgroundColor + "; }", 0);
+}
 
 function setVisibility(visible: boolean) {
     infosBlockElt.style.display = visible ? "" : "none";
@@ -111,13 +130,13 @@ function drawToCanvas(ctx: CanvasRenderingContext2D) {
 
     function drawBackground(x: number, y: number, width: number, height: number) {
         const previousFillStyle = ctx.fillStyle;
-        ctx.fillStyle = "black";
+        ctx.fillStyle = backgroundColor;
         ctx.fillRect(x, y, width, height);
         ctx.fillStyle = previousFillStyle;
     }
 
     drawBackground(BLOCK_MARGIN, BLOCK_MARGIN, titleElt.clientWidth, titleElt.clientHeight);
-    ctx.fillStyle = "white";
+    ctx.fillStyle = fontColor;
     ctx.textAlign = "left";
     ctx.textBaseline = "top";
 
@@ -179,6 +198,7 @@ function drawToCanvas(ctx: CanvasRenderingContext2D) {
 
 export {
     drawToCanvas,
+    setColors,
     setFormula,
     setParameters,
     setTitle,

@@ -5,6 +5,12 @@ import Viewport from "../gl-utils/viewport";
 import CompositingBase from "./compositing";
 
 class CompositingLight extends CompositingBase {
+    public constructor() {
+        super();
+        this.backgroundColor = "white";
+        this.foregroundColor = "black";
+    }
+
     public initialize(): void {
         gl.clearColor(1, 1, 1, 1);
 
