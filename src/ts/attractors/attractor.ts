@@ -90,8 +90,8 @@ abstract class Attractor {
     protected abstract computeXPoints(nbPoints: number): Float32Array;
 
     protected fillData(nbPoints: number, computeNextPoint: (pointIndex: number) => void) {
-        /* ignore the first 1000 ones */
-        for (let i = 0; i < 100; ++i) {
+        /* ignore the first few ones */
+        for (let i = 0; i < 10; ++i) {
             computeNextPoint(0);
         }
 

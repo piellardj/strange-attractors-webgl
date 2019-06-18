@@ -48,7 +48,7 @@ function main() {
     let shouldComposeAgain: boolean;
     Parameters.shouldComposeAgainObservers.push(() => shouldComposeAgain = true);
 
-    const STEP_SIZE = Math.pow(2, 16);
+    const MAX_STEP_SIZE = Math.pow(2, 17);
     let attractor: Attractor;
     let compositing: Compositing;
     function mainLoop() {
@@ -67,8 +67,9 @@ function main() {
 
         if (totalPoints < Parameters.nbPointsNeeded) {
             compositing.bindTopLayer();
-            if (attractor.drawXPoints(STEP_SIZE)) {
-                setTotalPoints(totalPoints + STEP_SIZE);
+            const stepSize = Math.ceil(Math.min(MAX_STEP_SIZE, Parameters.nbPointsNeeded - totalPoints));
+            if (attractor.drawXPoints(stepSize)) {
+                setTotalPoints(totalPoints + stepSize);
                 compositing.compose();
             }
         }
@@ -130,9 +131,10 @@ function main() {
         isolateCanvasGL();
 
         let nbPoints = 0;
-        const stepSize = Math.pow(2, 18);
+        const maxStepSize = Math.pow(2, 18);
         compositing.bindTopLayer();
         while (nbPoints < nbPointsNeeded) {
+            const stepSize = Math.ceil(Math.min(maxStepSize, nbPointsNeeded - nbPoints));
             nbPoints += stepSize;
             attractor.drawXPoints(stepSize);
         }
