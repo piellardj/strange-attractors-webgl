@@ -10,6 +10,7 @@ import * as Infos from "./infos";
 import { attractorNames, compositingNames, ControlsID, Parameters } from "./parameters";
 
 import Compositing from "./compositing/compositing";
+import CompositingColor from "./compositing/compositing-color";
 import CompositingDark from "./compositing/compositing-dark";
 import CompositingLight from "./compositing/compositing-light";
 
@@ -33,6 +34,7 @@ function main() {
     attractors[attractorNames.FractalDream] = new FractalDreamAttractor();
 
     const compositings = {};
+    compositings[compositingNames.color] = new CompositingColor();
     compositings[compositingNames.dark] = new CompositingDark();
     compositings[compositingNames.light] = new CompositingLight();
 
@@ -64,10 +66,9 @@ function main() {
             compositing.bindTopLayer();
             if (attractor.drawXPoints(STEP_SIZE)) {
                 setTotalPoints(totalPoints + STEP_SIZE);
+                compositing.compose();
             }
         }
-
-        compositing.compose();
 
         requestAnimationFrame(mainLoop);
     }

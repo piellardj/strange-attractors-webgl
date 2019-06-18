@@ -19,6 +19,7 @@ const attractorNames = {
 const compositingNames = {
     dark: "dark",
     light: "light",
+    color: "color",
 };
 
 /* === IDs ============================================================ */
@@ -33,6 +34,8 @@ const controlId = {
     INTENSITY: "intensity-range-id",
     QUALITY: "quality-range-id",
     COMPOSITING: "compositing",
+    FOREGROUND: "foreground-range-id",
+    BACKGROUND: "background-range-id",
     DOWNLOAD_SIZE: "download-size",
     DOWNLOAD: "file-download-id",
 };
@@ -61,10 +64,21 @@ let d: number;
 let intensity: number;
 let quality: number;
 let compositing: string;
+let foregroundHue: number;
+let backgroundHue: number;
 let nbPointsNeeded: number;
 
 function updateNbPointsNeeded() {
     nbPointsNeeded = Parameters.computeNbPointsNeeded(Canvas.getSize());
+}
+
+function setCompositing(name: string) {
+    const isColor = (name === compositingNames.color);
+    Controls.setVisibility(controlId.FOREGROUND, isColor);
+    Controls.setVisibility(controlId.BACKGROUND, isColor);
+
+    compositing = name;
+    callObservers(observers.clear);
 }
 
 /* === INTERFACE ====================================================== */
@@ -103,6 +117,14 @@ class Parameters {
 
     public static get compositing(): string {
         return compositing;
+    }
+
+    public static get foregroundHue(): number {
+        return foregroundHue;
+    }
+
+    public static get backgroundHue(): number {
+        return backgroundHue;
     }
 
     public static get clearObservers(): GenericObserver[] {
@@ -172,10 +194,21 @@ Range.addObserver(controlId.QUALITY, (newvalue: number) => {
 quality = 1 - (254 / 255) * Range.getValue(controlId.QUALITY);
 
 Tabs.addObserver(controlId.COMPOSITING, (newValue: string[]) => {
-    compositing = "" + newValue[0];
+    setCompositing("" + newValue[0]);
+});
+setCompositing("" + Tabs.getValues(controlId.COMPOSITING));
+
+Range.addObserver(controlId.FOREGROUND, (newValue: number) => {
+    foregroundHue = newValue;
     callObservers(observers.clear);
 });
-compositing = "" + Tabs.getValues(controlId.COMPOSITING);
+foregroundHue = Range.getValue(controlId.FOREGROUND);
+
+Range.addObserver(controlId.BACKGROUND, (newValue: number) => {
+    backgroundHue = newValue;
+    callObservers(observers.clear);
+});
+backgroundHue = Range.getValue(controlId.BACKGROUND);
 
 Checkbox.addObserver(controlId.INDICATORS, (checked: number) => {
     Canvas.setIndicatorsVisibility(checked);

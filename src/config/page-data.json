@@ -52,7 +52,7 @@
                     "id": "a-range-id",
                     "min": -5,
                     "max": 5,
-                    "value": -2.24,
+                    "value": 3,
                     "step": 0.01
                 },
                 {
@@ -61,7 +61,7 @@
                     "id": "b-range-id",
                     "min": -5,
                     "max": 5,
-                    "value": 0.43,
+                    "value": 1.25,
                     "step": 0.01
                 },
                 {
@@ -70,7 +70,7 @@
                     "id": "c-range-id",
                     "min": -5,
                     "max": 5,
-                    "value": -0.65,
+                    "value": 1.58,
                     "step": 0.01
                 },
                 {
@@ -79,7 +79,7 @@
                     "id": "d-range-id",
                     "min": -5,
                     "max": 5,
-                    "value": -2.43,
+                    "value": 1.72,
                     "step": 0.01
                 }
             ]
@@ -106,8 +106,25 @@
                     "step": 0.01
                 },
                 {
+                    "title": "Show indicators",
+                    "type": "checkbox",
+                    "id": "indicators-checkbox-id",
+                    "checked": true
+                },
+                {
+                    "title": "Show formula",
+                    "type": "checkbox",
+                    "id": "formula-checkbox-id",
+                    "checked": true
+                }
+            ]
+        },
+        {
+            "title": "Composition",
+            "controls": [
+                {
                     "type": "tabs",
-                    "title": "Compositing",
+                    "title": "Theme",
                     "id": "compositing",
                     "unique": true,
                     "options": [
@@ -119,20 +136,30 @@
                             "value": "light",
                             "label": "Light",
                             "checked": true
+                        },
+                        {
+                            "value": "color",
+                            "label": "Color"
                         }
                     ]
                 },
                 {
-                    "title": "Show indicators",
-                    "type": "checkbox",
-                    "id": "indicators-checkbox-id",
-                    "checked": true
+                    "title": "Foreground",
+                    "type": "range",
+                    "id": "foreground-range-id",
+                    "min": 0,
+                    "max": 1,
+                    "value": 0.9,
+                    "step": 0.01
                 },
                 {
-                    "title": "Show formula",
-                    "type": "checkbox",
-                    "id": "formula-checkbox-id",
-                    "checked": true
+                    "title": "Background",
+                    "type": "range",
+                    "id": "background-range-id",
+                    "min": 0,
+                    "max": 1,
+                    "value": 0.3,
+                    "step": 0.01
                 }
             ]
         },

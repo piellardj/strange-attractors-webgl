@@ -82,28 +82,28 @@
               <div class="control" id="control-a-range-id">
                 <label>a:</label>
                 <div class="range">
-                  <input type="range" min="-5" max="5" value="-2.24" step="0.01" class="slider" id="a-range-id">
+                  <input type="range" min="-5" max="5" value="3" step="0.01" class="slider" id="a-range-id">
                   <span class="tooltip"></span>
                 </div>
               </div>
               <div class="control" id="control-b-range-id">
                 <label>b:</label>
                 <div class="range">
-                  <input type="range" min="-5" max="5" value="0.43" step="0.01" class="slider" id="b-range-id">
+                  <input type="range" min="-5" max="5" value="1.25" step="0.01" class="slider" id="b-range-id">
                   <span class="tooltip"></span>
                 </div>
               </div>
               <div class="control" id="control-c-range-id">
                 <label>c:</label>
                 <div class="range">
-                  <input type="range" min="-5" max="5" value="-0.65" step="0.01" class="slider" id="c-range-id">
+                  <input type="range" min="-5" max="5" value="1.58" step="0.01" class="slider" id="c-range-id">
                   <span class="tooltip"></span>
                 </div>
               </div>
               <div class="control" id="control-d-range-id">
                 <label>d:</label>
                 <div class="range">
-                  <input type="range" min="-5" max="5" value="-2.43" step="0.01" class="slider" id="d-range-id">
+                  <input type="range" min="-5" max="5" value="1.72" step="0.01" class="slider" id="d-range-id">
                   <span class="tooltip"></span>
                 </div>
               </div>
@@ -129,15 +129,6 @@
                   <span class="tooltip"></span>
                 </div>
               </div>
-              <div class="control" id="control-compositing">
-                <label>Compositing:</label>
-                <div class="tabs compact" id="compositing-id">
-                  <input type="radio" name="compositing" value="dark" id="compositing-dark-id" />
-                  <label for="compositing-dark-id">Dark</label>
-                  <input type="radio" name="compositing" value="light" id="compositing-light-id" checked />
-                  <label for="compositing-light-id">Light</label>
-                </div>
-              </div>
               <div class="control" id="control-indicators-checkbox-id">
                 <label>Show indicators:</label>
                 <div class="checkbox">
@@ -150,6 +141,39 @@
                 <div class="checkbox">
                   <input type="checkbox" id="formula-checkbox-id" checked>
                   <label for="formula-checkbox-id" class="checkmark"></label>
+                </div>
+              </div>
+            </div>
+          </section>
+          <hr />
+
+          <section class="controls-section">
+            <h2>Composition</h2>
+
+            <div class="controls-list">
+              <div class="control" id="control-compositing">
+                <label>Theme:</label>
+                <div class="tabs compact" id="compositing-id">
+                  <input type="radio" name="compositing" value="dark" id="compositing-dark-id" />
+                  <label for="compositing-dark-id">Dark</label>
+                  <input type="radio" name="compositing" value="light" id="compositing-light-id" checked />
+                  <label for="compositing-light-id">Light</label>
+                  <input type="radio" name="compositing" value="color" id="compositing-color-id" />
+                  <label for="compositing-color-id">Color</label>
+                </div>
+              </div>
+              <div class="control" id="control-foreground-range-id">
+                <label>Foreground:</label>
+                <div class="range">
+                  <input type="range" min="0" max="1" value="0.9" step="0.01" class="slider" id="foreground-range-id">
+                  <span class="tooltip"></span>
+                </div>
+              </div>
+              <div class="control" id="control-background-range-id">
+                <label>Background:</label>
+                <div class="range">
+                  <input type="range" min="0" max="1" value="0.3" step="0.01" class="slider" id="background-range-id">
+                  <span class="tooltip"></span>
                 </div>
               </div>
             </div>
