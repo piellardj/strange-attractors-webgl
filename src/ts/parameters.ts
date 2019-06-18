@@ -51,8 +51,10 @@ function callObservers(observersList: any[]): void {
 
 const observers: {
     clear: GenericObserver[],
+    shouldComposeAgain: GenericObserver[],
 } = {
     clear: [],
+    shouldComposeAgain: [],
 };
 
 let attractor: string;
@@ -131,6 +133,10 @@ class Parameters {
         return observers.clear;
     }
 
+    public static get shouldComposeAgainObservers(): GenericObserver[] {
+        return observers.shouldComposeAgain;
+    }
+
     public static computeNbPointsNeeded(canvasSize: number[]): number {
         const minDimension = Math.min(canvasSize[0], canvasSize[1]);
         return intensity / (256 * quality) * minDimension * minDimension;
@@ -200,13 +206,13 @@ setCompositing("" + Tabs.getValues(controlId.COMPOSITING));
 
 Range.addObserver(controlId.FOREGROUND, (newValue: number) => {
     foregroundHue = newValue;
-    callObservers(observers.clear);
+    callObservers(observers.shouldComposeAgain);
 });
 foregroundHue = Range.getValue(controlId.FOREGROUND);
 
 Range.addObserver(controlId.BACKGROUND, (newValue: number) => {
     backgroundHue = newValue;
-    callObservers(observers.clear);
+    callObservers(observers.shouldComposeAgain);
 });
 backgroundHue = Range.getValue(controlId.BACKGROUND);
 

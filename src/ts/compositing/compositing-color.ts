@@ -92,7 +92,6 @@ class CompositingColor extends CompositingBase {
         const canvasSize = Canvas.getSize();
         const minSize = Math.min(canvasSize[0], canvasSize[1]);
         const neededSize = upperPowerOfTwo(minSize);
-        console.log("min " + minSize + " ; " + neededSize);
         if (this._currentTextureSize !== neededSize) {
             this.initializeTexture(neededSize);
             this._FBO.width = neededSize;
@@ -138,6 +137,22 @@ class CompositingColor extends CompositingBase {
         }
     }
 
+    public updateColors(): void {
+        function normalizedTo255(x: number): number {
+            return Math.floor(255 * x);
+        }
+        function rgbaToString(rgb: number[]): string {
+            return "rgb(" + normalizedTo255(rgb[0]) + "," +
+                normalizedTo255(rgb[1]) + "," + normalizedTo255(rgb[2])  + ")";
+        }
+
+        this._foregroundRgb = HSVToRGB(Parameters.foregroundHue, 0.8, 1);
+        this.foregroundColor = rgbaToString(this._foregroundRgb);
+
+        this._backgroundRgb = HSVToRGB(Parameters.backgroundHue, 0.2, 0.85);
+        this.backgroundColor = rgbaToString(this._backgroundRgb);
+    }
+
     /* size parameter should be a power of two */
     private initializeTexture(size: number): void {
         if (this._texture) {
@@ -160,22 +175,6 @@ class CompositingColor extends CompositingBase {
         gl.bindTexture(gl.TEXTURE_2D, null);
 
         this._currentTextureSize = size;
-    }
-
-    private updateColors(): void {
-        function normalizedTo255(x: number): number {
-            return Math.floor(255 * x);
-        }
-        function rgbaToString(rgb: number[]): string {
-            return "rgb(" + normalizedTo255(rgb[0]) + "," +
-                normalizedTo255(rgb[1]) + "," + normalizedTo255(rgb[2])  + ")";
-        }
-
-        this._foregroundRgb = HSVToRGB(Parameters.foregroundHue, 0.8, 1);
-        this.foregroundColor = rgbaToString(this._foregroundRgb);
-
-        this._backgroundRgb = HSVToRGB(Parameters.backgroundHue, 0.2, 0.85);
-        this.backgroundColor = rgbaToString(this._backgroundRgb);
     }
 }
 

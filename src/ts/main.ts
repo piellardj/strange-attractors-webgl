@@ -45,6 +45,9 @@ function main() {
     }
     setTotalPoints(0);
 
+    let shouldComposeAgain: boolean;
+    Parameters.shouldComposeAgainObservers.push(() => shouldComposeAgain = true);
+
     const STEP_SIZE = Math.pow(2, 16);
     let attractor: Attractor;
     let compositing: Compositing;
@@ -68,6 +71,13 @@ function main() {
                 setTotalPoints(totalPoints + STEP_SIZE);
                 compositing.compose();
             }
+        }
+
+        if (shouldComposeAgain) {
+            shouldComposeAgain = false;
+            compositing.updateColors();
+            compositing.compose();
+            Infos.setColors(compositing.foregroundColor, compositing.backgroundColor);
         }
 
         requestAnimationFrame(mainLoop);

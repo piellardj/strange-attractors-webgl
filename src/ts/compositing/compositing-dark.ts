@@ -26,6 +26,7 @@ class CompositingDark extends CompositingBase {
     /* tslint:disable:no-empty */
     public bindTopLayer(): void {}
     public compose(): void {}
+    public updateColors(): void {}
     /* tslint:enable:no-empty */
 }
 
