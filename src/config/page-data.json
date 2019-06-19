@@ -1,7 +1,10 @@
 {
     "title": "Strange attractors",
     "description": "Dynamic and interactive strange attractors drawings",
-    "introduction": [],
+    "introduction": [
+        "Strange attractors are complex mathematical figures representing the path traced by a point iteratively moved following strict rules. Strange attractors often exhibit beautiful fractal patterns. The figures drawn in this experiment are the superposition of many different trajectories from random starting points.",
+        "This project supports various attractor types, and for each of them you can change the parameters and watch unique patterns appear."
+    ],
     "githubProjectName": "strange-attractors-webgl",
     "additionalLinks": [],
     "scriptFiles": [
