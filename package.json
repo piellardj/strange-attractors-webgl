@@ -1,9 +1,8 @@
 {
-  "name": "lights-webgl",
-  "version": "0.0.1",
-  "homepage": "https://piellardj.github.io/lights-webgl",
-  "description": "Simple 2D ray-tracer",
-  "main": "build/index.js",
+  "name": "strange-attractors-webgl",
+  "version": "1.0.0",
+  "homepage": "https://piellardj.github.io/strange-attractors-webgl",
+  "description": "Performant 2D strange attractors plotter",
   "scripts": {
     "build-page": "node src/generate-page.js",
     "build-shaders": "node src/build-shaders.js",
@@ -14,7 +13,7 @@
     "webpack": "webpack --config src/config/webpack.config.js --output docs/script/main.min.js"
   },
   "author": "“Jérémie PIELLARD <jeremie.piellard@gmail.com> (https://github.com/piellardj)",
-  "repository": "github:piellardj/lights-webgl",
+  "repository": "github:piellardj/strange-attractors-webgl",
   "license": "ISC",
   "devDependencies": {
     "fs-extra": "^8.0.1",
