@@ -99,6 +99,14 @@ function main() {
         const figureSize = +Tabs.getValues(ControlsID.DOWNLOAD_SIZE)[0];
 
         const nbPointsNeeded = Parameters.computeNbPointsNeeded([figureSize, figureSize]);
+        if (nbPointsNeeded > 25000000) {
+            const message = "Rendering your image might take a while " +
+                "because it requires to draw " + nbPointsNeeded.toLocaleString() + " points. " +
+                "Do you want to proceed?";
+            if (!confirm(message)) {
+                return;
+            }
+        }
 
         const canvas2D = document.createElement("canvas");
         const ctx2D = canvas2D.getContext("2d");
