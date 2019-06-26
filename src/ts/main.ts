@@ -21,9 +21,9 @@ declare const Tabs: any;
 function main() {
     initGL();
 
-    let needToAdjustCanvas = true;
-    Canvas.Observers.canvasResize.push(() => needToAdjustCanvas = true);
-    Parameters.clearObservers.push(() => needToAdjustCanvas = true);
+    let needToRestartRendering = true;
+    Canvas.Observers.canvasResize.push(() => needToRestartRendering = true);
+    Parameters.clearObservers.push(() => needToRestartRendering = true);
 
     Parameters.attractor = attractorNames.DeJong;
 
@@ -52,8 +52,8 @@ function main() {
     let attractor: Attractor;
     let compositing: Compositing;
     function mainLoop() {
-        if (needToAdjustCanvas) {
-            needToAdjustCanvas = false;
+        if (needToRestartRendering) {
+            needToRestartRendering = false;
             setTotalPoints(0);
 
             attractor = attractors[Parameters.attractor];
@@ -125,7 +125,7 @@ function main() {
             canvasGL.style.height = "";
             Canvas.showLoader(false);
             Canvas.setLoaderText("");
-            needToAdjustCanvas = true;
+            needToRestartRendering = true;
         }
 
         isolateCanvasGL();
