@@ -10,7 +10,7 @@ import Boundaries from "./boundaries";
 let shader: Shader = null;
 let pointsVBO: VBO = null;
 
-declare const Canvas: any;
+import "../page-interface-generated";
 
 abstract class Attractor {
     protected boundaries: Boundaries;
@@ -46,7 +46,7 @@ abstract class Attractor {
             const data = this.computeXPoints(nbPoints);
             pointsVBO.setData(data);
 
-            const canvasSize = Canvas.getSize();
+            const canvasSize = Page.Canvas.getSize();
             const aspectRatio = canvasSize[0] / canvasSize[1];
 
             /* tslint:disable:no-string-literal */

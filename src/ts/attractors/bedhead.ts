@@ -1,7 +1,7 @@
 import { ControlsID, Parameters } from "../parameters";
 import Attractor from "./attractor";
 
-declare const Controls: any;
+import "../page-interface-generated";
 
 class BeadheadAttractor extends Attractor {
     constructor() {
@@ -25,10 +25,10 @@ class BeadheadAttractor extends Attractor {
     }
 
     public toggleParametersVisibility(): void {
-        Controls.setVisibility(ControlsID.A, true);
-        Controls.setVisibility(ControlsID.B, true);
-        Controls.setVisibility(ControlsID.C, false);
-        Controls.setVisibility(ControlsID.D, false);
+        Page.Controls.setVisibility(ControlsID.A, true);
+        Page.Controls.setVisibility(ControlsID.B, true);
+        Page.Controls.setVisibility(ControlsID.C, false);
+        Page.Controls.setVisibility(ControlsID.D, false);
     }
 
     protected computeXPoints(nbPoints: number): Float32Array {

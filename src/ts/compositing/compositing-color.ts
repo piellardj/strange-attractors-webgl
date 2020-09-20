@@ -9,7 +9,7 @@ import Viewport from "../gl-utils/viewport";
 import { Parameters } from "../parameters";
 import CompositingBase from "./compositing";
 
-declare const Canvas: any;
+import "../page-interface-generated";
 
 function HSVToRGB(hue: number, saturation: number, value: number): number[] {
     let r = 0;
@@ -89,7 +89,7 @@ class CompositingColor extends CompositingBase {
             return Math.pow(2, Math.ceil(Math.log(x) * Math.LOG2E));
         }
 
-        const canvasSize = Canvas.getSize();
+        const canvasSize = Page.Canvas.getSize();
         const minSize = Math.min(canvasSize[0], canvasSize[1]);
         const neededSize = upperPowerOfTwo(minSize);
         if (this._currentTextureSize !== neededSize) {

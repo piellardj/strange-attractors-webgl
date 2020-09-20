@@ -1,4 +1,4 @@
-declare const Canvas: any;
+import "./page-interface-generated";
 
 const FONT_NAME = "Nothing You Could Do";
 const BLOCK_MARGIN = 8;
@@ -73,7 +73,7 @@ infosBlockElt.appendChild(formulaElt);
 infosBlockElt.appendChild(parametersElt);
 setVisibility(false);
 
-const canvasContainer = (Canvas.getCanvas() as HTMLElement).parentElement;
+const canvasContainer = (Page.Canvas.getCanvas() as HTMLElement).parentElement;
 canvasContainer.appendChild(infosBlockElt);
 
 function setColors(newFontColor: string, newBackgroundColor: string) {

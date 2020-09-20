@@ -1,13 +1,6 @@
 import * as Infos from "./infos";
 
-declare const Button: any;
-declare const Canvas: any;
-declare const Checkbox: any;
-declare const Controls: any;
-declare const FileControl: any;
-declare const Picker: any;
-declare const Range: any;
-declare const Tabs: any;
+import "./page-interface-generated";
 
 const attractorNames = {
     DeJong: "de-jong",
@@ -71,13 +64,13 @@ let backgroundHue: number;
 let nbPointsNeeded: number;
 
 function updateNbPointsNeeded() {
-    nbPointsNeeded = Parameters.computeNbPointsNeeded(Canvas.getSize());
+    nbPointsNeeded = Parameters.computeNbPointsNeeded(Page.Canvas.getSize());
 }
 
 function setCompositing(name: string) {
     const isColor = (name === compositingNames.color);
-    Controls.setVisibility(controlId.FOREGROUND, isColor);
-    Controls.setVisibility(controlId.BACKGROUND, isColor);
+    Page.Controls.setVisibility(controlId.FOREGROUND, isColor);
+    Page.Controls.setVisibility(controlId.BACKGROUND, isColor);
 
     compositing = name;
     callObservers(observers.clear);
@@ -89,7 +82,7 @@ class Parameters {
         return attractor;
     }
     public static set attractor(att: string) {
-        Picker.setValue(controlId.ATTRACTOR, att);
+        Page.Picker.setValue(controlId.ATTRACTOR, att);
         attractor = att;
     }
 
@@ -147,41 +140,41 @@ class Parameters {
 
 /* === EVENTS BINDING ================================================= */
 /* --- PARAMETERS ----------------------------------------------------- */
-Picker.addObserver(controlId.ATTRACTOR, (value: string) => {
+Page.Picker.addObserver(controlId.ATTRACTOR, (value: string) => {
     attractor = value;
     callObservers(observers.clear);
 });
 
-Range.addObserver(controlId.A, (newvalue: number) => {
+Page.Range.addObserver(controlId.A, (newvalue: number) => {
     a = newvalue;
     callObservers(observers.clear);
 });
-a = Range.getValue(controlId.A);
+a = Page.Range.getValue(controlId.A);
 
-Range.addObserver(controlId.B, (newvalue: number) => {
+Page.Range.addObserver(controlId.B, (newvalue: number) => {
     b = newvalue;
     callObservers(observers.clear);
 });
-b = Range.getValue(controlId.B);
+b = Page.Range.getValue(controlId.B);
 
-Range.addObserver(controlId.C, (newvalue: number) => {
+Page.Range.addObserver(controlId.C, (newvalue: number) => {
     c = newvalue;
     callObservers(observers.clear);
 });
-c = Range.getValue(controlId.C);
+c = Page.Range.getValue(controlId.C);
 
-Range.addObserver(controlId.D, (newvalue: number) => {
+Page.Range.addObserver(controlId.D, (newvalue: number) => {
     d = newvalue;
     callObservers(observers.clear);
 });
-d = Range.getValue(controlId.D);
+d = Page.Range.getValue(controlId.D);
 
-Checkbox.addObserver(controlId.FORMULA, (checked: boolean) => {
+Page.Checkbox.addObserver(controlId.FORMULA, (checked: boolean) => {
     Infos.setVisibility(checked);
 });
-Infos.setVisibility(Checkbox.isChecked(controlId.FORMULA));
+Infos.setVisibility(Page.Checkbox.isChecked(controlId.FORMULA));
 
-Range.addObserver(controlId.INTENSITY, (newvalue: number) => {
+Page.Range.addObserver(controlId.INTENSITY, (newvalue: number) => {
     const needToClear = (newvalue < intensity);
     intensity = newvalue;
     updateNbPointsNeeded();
@@ -190,38 +183,38 @@ Range.addObserver(controlId.INTENSITY, (newvalue: number) => {
         callObservers(observers.clear);
     }
 });
-intensity = Range.getValue(controlId.INTENSITY);
+intensity = Page.Range.getValue(controlId.INTENSITY);
 
-Range.addObserver(controlId.QUALITY, (newvalue: number) => {
+Page.Range.addObserver(controlId.QUALITY, (newvalue: number) => {
     quality = 1 - (254 / 255) * newvalue;
     updateNbPointsNeeded();
     callObservers(observers.clear);
 });
-quality = 1 - (254 / 255) * Range.getValue(controlId.QUALITY);
+quality = 1 - (254 / 255) * Page.Range.getValue(controlId.QUALITY);
 
-Tabs.addObserver(controlId.COMPOSITING, (newValue: string[]) => {
+Page.Tabs.addObserver(controlId.COMPOSITING, (newValue: string[]) => {
     setCompositing("" + newValue[0]);
 });
-setCompositing("" + Tabs.getValues(controlId.COMPOSITING));
+setCompositing("" + Page.Tabs.getValues(controlId.COMPOSITING));
 
-Range.addObserver(controlId.FOREGROUND, (newValue: number) => {
+Page.Range.addObserver(controlId.FOREGROUND, (newValue: number) => {
     foregroundHue = newValue;
     callObservers(observers.shouldComposeAgain);
 });
-foregroundHue = Range.getValue(controlId.FOREGROUND);
+foregroundHue = Page.Range.getValue(controlId.FOREGROUND);
 
-Range.addObserver(controlId.BACKGROUND, (newValue: number) => {
+Page.Range.addObserver(controlId.BACKGROUND, (newValue: number) => {
     backgroundHue = newValue;
     callObservers(observers.shouldComposeAgain);
 });
-backgroundHue = Range.getValue(controlId.BACKGROUND);
+backgroundHue = Page.Range.getValue(controlId.BACKGROUND);
 
-Checkbox.addObserver(controlId.INDICATORS, (checked: number) => {
-    Canvas.setIndicatorsVisibility(checked);
+Page.Checkbox.addObserver(controlId.INDICATORS, (checked: boolean) => {
+    Page.Canvas.setIndicatorsVisibility(checked);
 });
-Canvas.setIndicatorsVisibility(Checkbox.isChecked(controlId.INDICATORS));
+Page.Canvas.setIndicatorsVisibility(Page.Checkbox.isChecked(controlId.INDICATORS));
 
-Canvas.Observers.canvasResize.push(updateNbPointsNeeded);
+Page.Canvas.Observers.canvasResize.push(updateNbPointsNeeded);
 updateNbPointsNeeded();
 
 export {

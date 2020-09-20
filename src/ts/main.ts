@@ -14,15 +14,13 @@ import CompositingColor from "./compositing/compositing-color";
 import CompositingDark from "./compositing/compositing-dark";
 import CompositingLight from "./compositing/compositing-light";
 
-declare const Canvas: any;
-declare const FileControl: any;
-declare const Tabs: any;
+import "./page-interface-generated";
 
 function main() {
     initGL();
 
     let needToRestartRendering = true;
-    Canvas.Observers.canvasResize.push(() => needToRestartRendering = true);
+    Page.Canvas.Observers.canvasResize.push(() => needToRestartRendering = true);
     Parameters.clearObservers.push(() => needToRestartRendering = true);
 
     Parameters.attractor = attractorNames.DeJong;
@@ -41,7 +39,7 @@ function main() {
     let totalPoints: number;
     function setTotalPoints(total: number): void {
         totalPoints = total;
-        Canvas.setIndicatorText("points-drawn", totalPoints.toLocaleString());
+        Page.Canvas.setIndicatorText("points-drawn", totalPoints.toLocaleString());
     }
     setTotalPoints(0);
 
@@ -95,8 +93,8 @@ function main() {
         }
     }
 
-    FileControl.addDownloadObserver(ControlsID.DOWNLOAD, () => {
-        const figureSize = +Tabs.getValues(ControlsID.DOWNLOAD_SIZE)[0];
+    Page.FileControl.addDownloadObserver(ControlsID.DOWNLOAD, () => {
+        const figureSize = +Page.Tabs.getValues(ControlsID.DOWNLOAD_SIZE)[0];
 
         const nbPointsNeeded = Parameters.computeNbPointsNeeded([figureSize, figureSize]);
         if (nbPointsNeeded > 25000000) {
@@ -114,9 +112,9 @@ function main() {
         canvas2D.width = figureSize + 400;
         canvas2D.height = figureSize;
 
-        const canvasGL = Canvas.getCanvas();
+        const canvasGL = Page.Canvas.getCanvas();
         function isolateCanvasGL() {
-            Canvas.showLoader(true);
+            Page.Canvas.showLoader(true);
 
             canvasGL.style.position = "absolute";
             canvasGL.style.width = figureSize + "px";
@@ -131,8 +129,8 @@ function main() {
             canvasGL.style.position = "";
             canvasGL.style.width = "";
             canvasGL.style.height = "";
-            Canvas.showLoader(false);
-            Canvas.setLoaderText("");
+            Page.Canvas.showLoader(false);
+            Page.Canvas.setLoaderText("");
             needToRestartRendering = true;
         }
 

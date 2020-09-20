@@ -1,7 +1,7 @@
 import { ControlsID, Parameters } from "../parameters";
 import Attractor from "./attractor";
 
-declare const Controls: any;
+import "../page-interface-generated";
 
 class CliffordAttractor extends Attractor {
     constructor() {
@@ -27,10 +27,10 @@ class CliffordAttractor extends Attractor {
     }
 
     public toggleParametersVisibility(): void {
-        Controls.setVisibility(ControlsID.A, true);
-        Controls.setVisibility(ControlsID.B, true);
-        Controls.setVisibility(ControlsID.C, true);
-        Controls.setVisibility(ControlsID.D, true);
+        Page.Controls.setVisibility(ControlsID.A, true);
+        Page.Controls.setVisibility(ControlsID.B, true);
+        Page.Controls.setVisibility(ControlsID.C, true);
+        Page.Controls.setVisibility(ControlsID.D, true);
     }
 
     protected computeXPoints(nbPoints: number): Float32Array {
