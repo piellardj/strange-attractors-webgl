@@ -88,7 +88,7 @@ function setColors(newFontColor: string, newBackgroundColor: string) {
 }
 
 function setVisibility(visible: boolean) {
-    infosBlockElt.style.display = visible ? "" : "none";
+    infosBlockElt.style.opacity = visible ? "1" : "0";
 }
 
 function setTitle(title: string) {
