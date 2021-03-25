@@ -59,8 +59,8 @@ let d: number;
 let intensity: number;
 let quality: number;
 let compositing: string;
-let foregroundHue: number;
-let backgroundHue: number;
+let foregroundColor: number[]; // in [0, 1]^3
+let backgroundColor: number[]; // in [0, 1]^3
 let nbPointsNeeded: number;
 
 function updateNbPointsNeeded() {
@@ -114,12 +114,12 @@ class Parameters {
         return compositing;
     }
 
-    public static get foregroundHue(): number {
-        return foregroundHue;
+    public static get foregroundColor(): number[] {
+        return foregroundColor;
     }
 
-    public static get backgroundHue(): number {
-        return backgroundHue;
+    public static get backgroundColor(): number[] {
+        return backgroundColor;
     }
 
     public static get clearObservers(): GenericObserver[] {
@@ -197,17 +197,26 @@ Page.Tabs.addObserver(controlId.COMPOSITING, (newValue: string[]) => {
 });
 setCompositing("" + Page.Tabs.getValues(controlId.COMPOSITING));
 
-Page.Range.addObserver(controlId.FOREGROUND, (newValue: number) => {
-    foregroundHue = newValue;
-    callObservers(observers.shouldComposeAgain);
-});
-foregroundHue = Page.Range.getValue(controlId.FOREGROUND);
+interface IRGB {
+    r: number;
+    g: number;
+    b: number;
+}
 
-Page.Range.addObserver(controlId.BACKGROUND, (newValue: number) => {
-    backgroundHue = newValue;
+function buildColor(color: IRGB): number[] {
+    return [color.r / 255, color.g / 255, color.b / 255, 1];
+}
+Page.ColorPicker.addObserver(controlId.FOREGROUND, (newColor) => {
+    foregroundColor = buildColor(newColor);
     callObservers(observers.shouldComposeAgain);
 });
-backgroundHue = Page.Range.getValue(controlId.BACKGROUND);
+foregroundColor = buildColor(Page.ColorPicker.getValue(controlId.FOREGROUND));
+
+Page.ColorPicker.addObserver(controlId.BACKGROUND, (newColor) => {
+    backgroundColor = buildColor(newColor);
+    callObservers(observers.shouldComposeAgain);
+});
+backgroundColor = buildColor(Page.ColorPicker.getValue(controlId.BACKGROUND));
 
 Page.Checkbox.addObserver(controlId.INDICATORS, (checked: boolean) => {
     Page.Canvas.setIndicatorsVisibility(checked);

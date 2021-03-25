@@ -151,22 +151,16 @@ const data = {
                     ]
                 },
                 {
-                    type: Demopage.supportedControls.Range,
+                    type: Demopage.supportedControls.ColorPicker,
                     title: "Foreground",
                     id: "foreground-range-id",
-                    min: 0,
-                    max: 1,
-                    value: 0.63,
-                    step: 0.01
+                    defaultValueHex: "#485BFC"
                 },
                 {
-                    type: Demopage.supportedControls.Range,
+                    type: Demopage.supportedControls.ColorPicker,
                     title: "Background",
                     id: "background-range-id",
-                    min: 0,
-                    max: 1,
-                    value: 0.36,
-                    step: 0.01
+                    defaultValueHex: "#AED9B5"
                 }
             ]
         },

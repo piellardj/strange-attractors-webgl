@@ -11,40 +11,6 @@ import CompositingBase from "./compositing";
 
 import "../page-interface-generated";
 
-function HSVToRGB(hue: number, saturation: number, value: number): number[] {
-    let r = 0;
-    let g = 0;
-    let b = 0;
-
-    hue = (hue %  1) * 6;
-
-    if (hue < 1) {
-        r = 1;
-        g = hue;
-    } else if (hue < 2) {
-        r = 2 - hue;
-        g = 1;
-    } else if (hue < 3) {
-        g = 1;
-        b = hue - 2;
-    } else if (hue < 4) {
-        g = 4 - hue;
-        b = 1;
-    } else if (hue < 5) {
-        r = hue - 4;
-        b = 1;
-    } else if (hue < 6) {
-        r = 1;
-        b = 6 - hue;
-    }
-
-    r = value * (1 - saturation * (1 - r));
-    b = value * (1 - saturation * (1 - b));
-    g = value * (1 - saturation * (1 - g));
-
-    return [r, g, b, 1];
-}
-
 class CompositingColor extends CompositingBase {
     private _FBO: FBO;
 
@@ -53,8 +19,8 @@ class CompositingColor extends CompositingBase {
     private _texture: WebGLTexture;
     private _currentTextureSize: number;
 
-    private _foregroundRgb: number[];
-    private _backgroundRgb: number[];
+    private _foregroundRgb: number[]; // in [0, 1]^3
+    private _backgroundRgb: number[]; // in [0, 1]^3
 
     public constructor() {
         super();
@@ -146,10 +112,10 @@ class CompositingColor extends CompositingBase {
                 normalizedTo255(rgb[1]) + "," + normalizedTo255(rgb[2])  + ")";
         }
 
-        this._foregroundRgb = HSVToRGB(Parameters.foregroundHue, 0.8, 1);
+        this._foregroundRgb = Parameters.foregroundColor;
         this.foregroundColor = rgbaToString(this._foregroundRgb);
 
-        this._backgroundRgb = HSVToRGB(Parameters.backgroundHue, 0.2, 0.85);
+        this._backgroundRgb = Parameters.backgroundColor;
         this.backgroundColor = rgbaToString(this._backgroundRgb);
     }
 
