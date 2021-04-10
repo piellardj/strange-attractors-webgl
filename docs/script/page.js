@@ -148,6 +148,18 @@ var Page;
             }
             URL.removeQueryParameter = removeQueryParameter;
         })(URL = Helpers.URL || (Helpers.URL = {}));
+        var Events;
+        (function (Events) {
+            function callAfterDOMLoaded(callback) {
+                if (document.readyState === "loading") { // Loading hasn't finished yet
+                    document.addEventListener("DOMContentLoaded", callback);
+                }
+                else { // `DOMContentLoaded` has already fired
+                    callback();
+                }
+            }
+            Events.callAfterDOMLoaded = callAfterDOMLoaded;
+        })(Events = Helpers.Events || (Helpers.Events = {}));
     })(Helpers = Page.Helpers || (Page.Helpers = {}));
 })(Page || (Page = {}));
 
@@ -237,149 +249,177 @@ var Page;
 var Page;
 (function (Page) {
     var Picker;
-    (function (Picker) {
-        /**
-         * Populates pickers dictionary and binds events.
-         */
-        function buildPickersDictionary() {
-            var dictionary = {};
-            var pickers = document.querySelectorAll(".inline-picker");
-            for (var i = 0; i < pickers.length; ++i) {
-                var picker = {
-                    wrapper: pickers[i],
-                    leftButton: pickers[i].querySelector(".picker-button.left"),
-                    rightButton: pickers[i].querySelector(".picker-button.right"),
-                    span: pickers[i].querySelector("span"),
-                    inputs: pickers[i].querySelectorAll("input"),
-                    observers: [],
-                };
-                bindPickerEvents(picker);
-                dictionary[pickers[i].id] = picker;
-            }
-            return dictionary;
-        }
-        var pickersDictionary = buildPickersDictionary();
-        function getIndexOfCheckedInput(picker) {
-            for (var i = 0; i < picker.inputs.length; ++i) {
-                if (picker.inputs[i].checked) {
-                    return i;
+    (function (Picker_1) {
+        var Picker = /** @class */ (function () {
+            function Picker(container) {
+                var _this = this;
+                this.observers = [];
+                this.id = container.id;
+                this.container = container;
+                this.leftButton = container.querySelector(".picker-button.left");
+                this.rightButton = container.querySelector(".picker-button.right");
+                this.spanElement = container.querySelector("span");
+                this.radioInputs = [];
+                var radioInputs = container.querySelectorAll("input");
+                for (var i = 0; i < radioInputs.length; i++) {
+                    this.radioInputs.push(radioInputs[i]);
                 }
+                this.leftButton.addEventListener("click", function () {
+                    var index = _this.getIndexOfCheckedInput();
+                    _this.checkOnlyRadio(index - 1, _this.radioInputs.length - 1);
+                    _this.updateValue();
+                    Storage.storeState(_this);
+                    _this.callObservers();
+                });
+                this.rightButton.addEventListener("click", function () {
+                    var index = _this.getIndexOfCheckedInput();
+                    _this.checkOnlyRadio(index + 1, 0);
+                    _this.updateValue();
+                    Storage.storeState(_this);
+                    _this.callObservers();
+                });
+                this.updateValue();
             }
-            return -1;
-        }
-        function enableButton(button, enable) {
-            button.disabled = !enable;
-        }
-        /**
-         *  Updates selector text and disables/enables buttons if needed.
-         */
-        function updateVisibleValue(picker, callObservers) {
-            var index = getIndexOfCheckedInput(picker);
-            var selectedLabel;
-            var selectedValue = null;
-            if (index >= 0) {
-                selectedLabel = picker.inputs[index].dataset.label;
-                selectedValue = picker.inputs[index].value;
-            }
-            else {
-                selectedLabel = picker.wrapper.dataset.placeholder || "";
-            }
-            picker.span.innerText = selectedLabel;
-            if (picker.inputs.length < 0) {
-                enableButton(picker.leftButton, false);
-                enableButton(picker.rightButton, false);
-            }
-            else {
-                enableButton(picker.leftButton, !picker.inputs[0].checked);
-                enableButton(picker.rightButton, !picker.inputs[picker.inputs.length - 1].checked);
-            }
-            if (callObservers) {
-                for (var _i = 0, _a = picker.observers; _i < _a.length; _i++) {
+            Object.defineProperty(Picker.prototype, "value", {
+                get: function () {
+                    return this._value;
+                },
+                set: function (newValue) {
+                    for (var _i = 0, _a = this.radioInputs; _i < _a.length; _i++) {
+                        var radioInput = _a[_i];
+                        radioInput.checked = (radioInput.value === newValue);
+                    }
+                    this.updateValue();
+                },
+                enumerable: false,
+                configurable: true
+            });
+            Picker.prototype.callObservers = function () {
+                for (var _i = 0, _a = this.observers; _i < _a.length; _i++) {
                     var observer = _a[_i];
-                    observer(selectedValue);
+                    observer(this.value);
+                }
+            };
+            Picker.prototype.getIndexOfCheckedInput = function () {
+                for (var i = 0; i < this.radioInputs.length; i++) {
+                    if (this.radioInputs[i].checked) {
+                        return i;
+                    }
+                }
+                return -1;
+            };
+            Picker.prototype.updateValue = function () {
+                var indexOfSelected = this.getIndexOfCheckedInput();
+                if (indexOfSelected >= 0) {
+                    this._value = this.radioInputs[indexOfSelected].value;
+                }
+                else {
+                    this._value = null;
+                }
+                this.updateAppearance();
+            };
+            Picker.prototype.updateAppearance = function () {
+                var index = this.getIndexOfCheckedInput();
+                var selectedLabel;
+                if (index >= 0) {
+                    selectedLabel = this.radioInputs[index].dataset.label;
+                }
+                else {
+                    selectedLabel = this.container.dataset.placeholder || "";
+                }
+                this.spanElement.innerText = selectedLabel;
+                if (this.radioInputs.length < 0) {
+                    this.enableButton(this.leftButton, false);
+                    this.enableButton(this.rightButton, false);
+                }
+                else {
+                    this.enableButton(this.leftButton, !this.radioInputs[0].checked);
+                    this.enableButton(this.rightButton, !this.radioInputs[this.radioInputs.length - 1].checked);
+                }
+            };
+            Picker.prototype.enableButton = function (button, enable) {
+                button.disabled = !enable;
+            };
+            Picker.prototype.checkOnlyRadio = function (index, defaultIndex) {
+                for (var _i = 0, _a = this.radioInputs; _i < _a.length; _i++) {
+                    var radioInput = _a[_i];
+                    radioInput.checked = false;
+                }
+                if (index >= 0 && index < this.radioInputs.length) {
+                    this.radioInputs[index].checked = true;
+                }
+                else {
+                    this.radioInputs[defaultIndex].checked = true;
+                }
+            };
+            return Picker;
+        }());
+        var Cache;
+        (function (Cache) {
+            function loadCache() {
+                var result = {};
+                var containerElements = document.querySelectorAll("div.inline-picker[id]");
+                for (var i = 0; i < containerElements.length; i++) {
+                    var tabs = new Picker(containerElements[i]);
+                    result[tabs.id] = tabs;
+                }
+                return result;
+            }
+            var pickersCache;
+            function getPickerById(id) {
+                Cache.load();
+                return pickersCache[id] || null;
+            }
+            Cache.getPickerById = getPickerById;
+            function load() {
+                if (typeof pickersCache === "undefined") {
+                    pickersCache = loadCache();
                 }
             }
-        }
-        function bindPickerEvents(picker) {
-            picker.leftButton.addEventListener("click", function () {
-                var index = getIndexOfCheckedInput(picker);
-                if (index < 0) {
-                    picker.inputs[picker.inputs.length - 1].checked = true;
-                }
-                else if (index > 0) {
-                    picker.inputs[index].checked = false;
-                    picker.inputs[index - 1].checked = true;
-                }
-                updateVisibleValue(picker, true);
-            });
-            picker.rightButton.addEventListener("click", function () {
-                var index = getIndexOfCheckedInput(picker);
-                if (index < 0) {
-                    picker.inputs[0].checked = true;
-                }
-                else if (index < picker.inputs.length - 1) {
-                    picker.inputs[index].checked = false;
-                    picker.inputs[index + 1].checked = true;
-                }
-                updateVisibleValue(picker, true);
-            });
-            updateVisibleValue(picker, true);
-        }
+            Cache.load = load;
+        })(Cache || (Cache = {}));
         var Storage;
         (function (Storage) {
             var PREFIX = "picker";
             var NULL_VALUE = "__null__";
-            function attachStorageEvents() {
-                var pickersElementsSelectors = "div.inline-picker[id]";
-                var pickersElements = document.querySelectorAll(pickersElementsSelectors);
-                var _loop_1 = function (i) {
-                    var pickerElement = pickersElements[i];
-                    var pickerId = pickerElement.id;
-                    addObserver(pickerId, function (selectedValue) {
-                        var value = (selectedValue === null) ? NULL_VALUE : selectedValue;
-                        Page.Helpers.URL.setQueryParameter(PREFIX, pickerId, value);
-                    });
-                };
-                for (var i = 0; i < pickersElements.length; i++) {
-                    _loop_1(i);
-                }
+            function storeState(picker) {
+                var value = (picker.value === null) ? NULL_VALUE : picker.value;
+                Page.Helpers.URL.setQueryParameter(PREFIX, picker.id, value);
             }
-            Storage.attachStorageEvents = attachStorageEvents;
+            Storage.storeState = storeState;
             function applyStoredState() {
                 Page.Helpers.URL.loopOnParameters(PREFIX, function (controlId, value) {
-                    if (pickersDictionary[controlId]) {
-                        setValue(controlId, value);
+                    var picker = Cache.getPickerById(controlId);
+                    if (!picker) {
+                        Page.Helpers.URL.removeQueryParameter(PREFIX, controlId);
                     }
                     else {
-                        Page.Helpers.URL.removeQueryParameter(PREFIX, controlId);
+                        picker.value = value;
+                        picker.callObservers();
                     }
                 });
             }
             Storage.applyStoredState = applyStoredState;
         })(Storage || (Storage = {}));
-        Storage.applyStoredState();
-        Storage.attachStorageEvents();
+        Page.Helpers.Events.callAfterDOMLoaded(function () {
+            Cache.load();
+            Storage.applyStoredState();
+        });
         function addObserver(id, observer) {
-            pickersDictionary[id].observers.push(observer);
+            var picker = Cache.getPickerById(id);
+            picker.observers.push(observer);
         }
-        Picker.addObserver = addObserver;
+        Picker_1.addObserver = addObserver;
         function getValue(id) {
-            var picker = pickersDictionary[id];
-            var index = getIndexOfCheckedInput(picker);
-            if (index >= 0) {
-                return picker.inputs[index].value;
-            }
-            return null;
+            var picker = Cache.getPickerById(id);
+            return picker.value;
         }
-        Picker.getValue = getValue;
+        Picker_1.getValue = getValue;
         function setValue(id, value) {
-            var picker = pickersDictionary[id];
-            for (var i = 0; i < picker.inputs.length; ++i) {
-                picker.inputs[i].checked = (picker.inputs[i].value === value);
-            }
-            updateVisibleValue(picker, false);
+            var picker = Cache.getPickerById(id);
+            picker.value = value;
         }
-        Picker.setValue = setValue;
+        Picker_1.setValue = setValue;
     })(Picker = Page.Picker || (Page.Picker = {}));
 })(Page || (Page = {}));
 
@@ -388,127 +428,164 @@ var Page;
 var Page;
 (function (Page) {
     var Range;
-    (function (Range) {
-        function update(range) {
-            var container = range.parentElement;
-            var progressLeft = container.querySelector(".range-progress-left");
-            var progression = (+range.value - +range.min) / (+range.max - +range.min);
-            progression = Math.max(0, Math.min(1, progression));
-            progressLeft.style.width = (100 * progression) + "%";
-            var tooltip = container.querySelector("output.range-tooltip");
-            tooltip.textContent = range.value;
-        }
-        window.addEventListener("load", function () {
-            var updateFunctions = [];
-            var selector = ".range-container > input[type='range']";
-            var rangeElements = document.querySelectorAll(selector);
-            var _loop_1 = function (i) {
-                var rangeElement = rangeElements[i];
-                var updateFunction = function () {
-                    update(rangeElement);
-                };
-                updateFunctions.push(updateFunction);
-                rangeElement.addEventListener("input", updateFunction);
-                rangeElement.addEventListener("change", updateFunction);
-                updateFunction();
+    (function (Range_1) {
+        var Range = /** @class */ (function () {
+            function Range(container) {
+                var _this = this;
+                this.onInputObservers = [];
+                this.onChangeObservers = [];
+                this.inputElement = container.querySelector("input[type='range']");
+                this.progressLeftElement = container.querySelector(".range-progress-left");
+                this.tooltipElement = container.querySelector("output.range-tooltip");
+                this.id = this.inputElement.id;
+                this.inputElement.addEventListener("input", function (event) {
+                    event.stopPropagation();
+                    _this.reloadValue();
+                    _this.callSpecificObservers(_this.onInputObservers);
+                });
+                this.inputElement.addEventListener("change", function (event) {
+                    event.stopPropagation();
+                    _this.reloadValue();
+                    Storage.storeState(_this);
+                    _this.callSpecificObservers(_this.onChangeObservers);
+                });
+                this.reloadValue();
+            }
+            Object.defineProperty(Range.prototype, "value", {
+                get: function () {
+                    return this._value;
+                },
+                set: function (newValue) {
+                    this.inputElement.value = "" + newValue;
+                    this.reloadValue();
+                },
+                enumerable: false,
+                configurable: true
+            });
+            Range.prototype.callObservers = function () {
+                this.callSpecificObservers(this.onInputObservers);
+                this.callSpecificObservers(this.onChangeObservers);
             };
-            for (var i = 0; i < rangeElements.length; i++) {
-                _loop_1(i);
+            Range.prototype.callSpecificObservers = function (observers) {
+                for (var _i = 0, observers_1 = observers; _i < observers_1.length; _i++) {
+                    var observer = observers_1[_i];
+                    observer(this.value);
+                }
+            };
+            Range.prototype.updateAppearance = function () {
+                var currentLength = +this.inputElement.value - +this.inputElement.min;
+                var totalLength = +this.inputElement.max - +this.inputElement.min;
+                var progression = currentLength / totalLength;
+                progression = Math.max(0, Math.min(1, progression));
+                this.progressLeftElement.style.width = (100 * progression) + "%";
+                this.tooltipElement.textContent = this.inputElement.value;
+            };
+            Range.prototype.reloadValue = function () {
+                this._value = +this.inputElement.value;
+                this.updateAppearance();
+            };
+            return Range;
+        }());
+        var Cache;
+        (function (Cache) {
+            function loadCache() {
+                var result = {};
+                var selector = ".range-container > input[type='range']";
+                var rangeElements = document.querySelectorAll(selector);
+                for (var i = 0; i < rangeElements.length; i++) {
+                    var container = rangeElements[i].parentElement;
+                    var id = rangeElements[i].id;
+                    result[id] = new Range(container);
+                }
+                return result;
             }
-        });
-        function getRangeById(id) {
-            var selector = "input[type=range][id=" + id + "]";
-            var elt = document.querySelector(selector);
-            if (!elt) {
-                console.error("Cannot find range '" + selector + "'.");
+            var rangesCache;
+            function getRangeById(id) {
+                Cache.load();
+                return rangesCache[id] || null;
             }
-            return elt;
-        }
+            Cache.getRangeById = getRangeById;
+            function load() {
+                if (typeof rangesCache === "undefined") {
+                    rangesCache = loadCache();
+                }
+            }
+            Cache.load = load;
+        })(Cache || (Cache = {}));
         var Storage;
         (function (Storage) {
             var PREFIX = "range";
-            function attachStorageEvents() {
-                var inputsSelector = ".range-container input.slider[type=range][id]";
-                var inputElements = document.querySelectorAll(inputsSelector);
-                var _loop_2 = function (i) {
-                    var inputElement = inputElements[i];
-                    inputElement.addEventListener("change", function () {
-                        Page.Helpers.URL.setQueryParameter(PREFIX, inputElement.id, inputElement.value);
-                    });
-                };
-                for (var i = 0; i < inputElements.length; i++) {
-                    _loop_2(i);
-                }
+            function storeState(range) {
+                var valueAsString = "" + range.value;
+                Page.Helpers.URL.setQueryParameter(PREFIX, range.id, valueAsString);
             }
-            Storage.attachStorageEvents = attachStorageEvents;
+            Storage.storeState = storeState;
             function applyStoredState() {
                 Page.Helpers.URL.loopOnParameters(PREFIX, function (controlId, value) {
-                    var input = getRangeById(controlId);
-                    if (!input) {
+                    var range = Cache.getRangeById(controlId);
+                    if (!range) {
                         console.log("Removing invalid query parameter '" + controlId + "=" + value + "'.");
                         Page.Helpers.URL.removeQueryParameter(PREFIX, controlId);
                     }
                     else {
-                        setValue(controlId, +value);
+                        range.value = +value;
+                        range.callObservers();
                     }
                 });
             }
             Storage.applyStoredState = applyStoredState;
         })(Storage || (Storage = {}));
-        Storage.applyStoredState();
-        Storage.attachStorageEvents();
-        /**
-         * @return {boolean} Whether or not the observer was added
-         */
-        function addObserverInternal(rangeId, observer, eventName) {
-            var elt = getRangeById(rangeId);
-            if (elt) {
-                elt.addEventListener(eventName, function (event) {
-                    event.stopPropagation();
-                    observer(+elt.value);
-                }, false);
-                return true;
-            }
-            return false;
-        }
+        Page.Helpers.Events.callAfterDOMLoaded(function () {
+            Cache.load();
+            Storage.applyStoredState();
+        });
         var isIE11 = !!window.MSInputMethodContext && !!document["documentMode"];
         /**
          * Callback will be called every time the value changes.
          * @return {boolean} Whether or not the observer was added
          */
         function addObserver(rangeId, observer) {
-            if (isIE11) { // bug in IE 11, input event is never fired
-                return addObserverInternal(rangeId, observer, "change");
+            var range = Cache.getRangeById(rangeId);
+            if (range) {
+                if (isIE11) { // bug in IE 11, input event is never fired
+                    range.onChangeObservers.push(observer);
+                }
+                else {
+                    range.onInputObservers.push(observer);
+                }
+                return true;
             }
-            else {
-                return addObserverInternal(rangeId, observer, "input");
-            }
+            return false;
         }
-        Range.addObserver = addObserver;
+        Range_1.addObserver = addObserver;
         /**
          * Callback will be called only when the value stops changing.
          * @return {boolean} Whether or not the observer was added
          */
         function addLazyObserver(rangeId, observer) {
-            return addObserverInternal(rangeId, observer, "change");
+            var range = Cache.getRangeById(rangeId);
+            if (range) {
+                range.onChangeObservers.push(observer);
+                return true;
+            }
+            return false;
         }
-        Range.addLazyObserver = addLazyObserver;
+        Range_1.addLazyObserver = addLazyObserver;
         function getValue(rangeId) {
-            var elt = getRangeById(rangeId);
-            if (!elt) {
+            var range = Cache.getRangeById(rangeId);
+            if (!range) {
                 return null;
             }
-            return +elt.value;
+            return range.value;
         }
-        Range.getValue = getValue;
+        Range_1.getValue = getValue;
         function setValue(rangeId, value) {
-            var elt = getRangeById(rangeId);
-            if (elt) {
-                elt.value = "" + value;
-                update(elt);
+            var range = Cache.getRangeById(rangeId);
+            if (range) {
+                range.value = value;
             }
         }
-        Range.setValue = setValue;
+        Range_1.setValue = setValue;
     })(Range = Page.Range || (Page.Range = {}));
 })(Page || (Page = {}));
 
@@ -517,78 +594,123 @@ var Page;
 var Page;
 (function (Page) {
     var Checkbox;
-    (function (Checkbox) {
-        function getCheckboxFromId(id) {
-            var selector = "input[type=checkbox][id=" + id + "]";
-            var elt = document.querySelector(selector);
-            if (!elt) {
-                console.error("Cannot find checkbox '" + selector + "'.");
+    (function (Checkbox_1) {
+        var Checkbox = /** @class */ (function () {
+            function Checkbox(element) {
+                var _this = this;
+                this.observers = [];
+                this.id = element.id;
+                this.element = element;
+                this.reloadValue();
+                this.element.addEventListener("change", function () {
+                    _this.reloadValue();
+                    Storage.storeState(_this);
+                    _this.callObservers();
+                });
             }
-            return elt;
-        }
+            Object.defineProperty(Checkbox.prototype, "checked", {
+                get: function () {
+                    return this._checked;
+                },
+                set: function (newChecked) {
+                    this.element.checked = newChecked;
+                    this.reloadValue();
+                },
+                enumerable: false,
+                configurable: true
+            });
+            Checkbox.prototype.callObservers = function () {
+                for (var _i = 0, _a = this.observers; _i < _a.length; _i++) {
+                    var observer = _a[_i];
+                    observer(this.checked);
+                }
+            };
+            Checkbox.prototype.reloadValue = function () {
+                this._checked = this.element.checked;
+            };
+            return Checkbox;
+        }());
+        var Cache;
+        (function (Cache) {
+            function loadCache() {
+                var result = {};
+                var selector = "div.checkbox > input[type=checkbox][id]";
+                var elements = document.querySelectorAll(selector);
+                for (var i = 0; i < elements.length; i++) {
+                    var checkbox = new Checkbox(elements[i]);
+                    result[checkbox.id] = checkbox;
+                }
+                return result;
+            }
+            var checkboxesCache;
+            function getCheckboxById(id) {
+                Cache.load();
+                return checkboxesCache[id] || null;
+            }
+            Cache.getCheckboxById = getCheckboxById;
+            function load() {
+                if (typeof checkboxesCache === "undefined") {
+                    checkboxesCache = loadCache();
+                }
+            }
+            Cache.load = load;
+        })(Cache || (Cache = {}));
         var Storage;
         (function (Storage) {
             var PREFIX = "checkbox";
             var CHECKED = "true";
             var UNCHECKED = "false";
-            function attachStorageEvents() {
-                var checkboxesSelector = "div.checkbox > input[type=checkbox][id]";
-                var checkboxes = document.querySelectorAll(checkboxesSelector);
-                var _loop_1 = function (i) {
-                    var checkbox = checkboxes[i];
-                    checkbox.addEventListener("change", function () {
-                        var value = checkbox.checked ? CHECKED : UNCHECKED;
-                        Page.Helpers.URL.setQueryParameter(PREFIX, checkbox.id, value);
-                    });
-                };
-                for (var i = 0; i < checkboxes.length; i++) {
-                    _loop_1(i);
-                }
+            function storeState(checkbox) {
+                var stateAsString = checkbox.checked ? CHECKED : UNCHECKED;
+                Page.Helpers.URL.setQueryParameter(PREFIX, checkbox.id, stateAsString);
             }
-            Storage.attachStorageEvents = attachStorageEvents;
+            Storage.storeState = storeState;
             function applyStoredState() {
                 Page.Helpers.URL.loopOnParameters(PREFIX, function (checkboxId, value) {
-                    var input = getCheckboxFromId(checkboxId);
-                    if (!input || (value !== CHECKED && value !== UNCHECKED)) {
+                    var checkbox = Cache.getCheckboxById(checkboxId);
+                    if (!checkbox || (value !== CHECKED && value !== UNCHECKED)) {
                         console.log("Removing invalid query parameter '" + checkboxId + "=" + value + "'.");
                         Page.Helpers.URL.removeQueryParameter(PREFIX, checkboxId);
                     }
                     else {
-                        input.checked = (value === CHECKED);
+                        checkbox.checked = (value === CHECKED);
+                        checkbox.callObservers();
                     }
                 });
             }
             Storage.applyStoredState = applyStoredState;
         })(Storage || (Storage = {}));
-        Storage.applyStoredState();
-        Storage.attachStorageEvents();
+        Page.Helpers.Events.callAfterDOMLoaded(function () {
+            Cache.load();
+            Storage.applyStoredState();
+        });
         /**
          * @return {boolean} Whether or not the observer was added
          */
         function addObserver(checkboxId, observer) {
-            var elt = getCheckboxFromId(checkboxId);
-            if (elt) {
-                elt.addEventListener("change", function (event) {
-                    event.stopPropagation();
-                    observer(elt.checked);
-                }, false);
+            var checkbox = Cache.getCheckboxById(checkboxId);
+            if (checkbox) {
+                checkbox.observers.push(observer);
                 return true;
             }
             return false;
         }
-        Checkbox.addObserver = addObserver;
+        Checkbox_1.addObserver = addObserver;
         function setChecked(checkboxId, value) {
-            var elt = getCheckboxFromId(checkboxId);
-            if (elt) {
-                elt.checked = value ? true : false;
+            var checkbox = Cache.getCheckboxById(checkboxId);
+            if (checkbox) {
+                checkbox.checked = value;
             }
         }
-        Checkbox.setChecked = setChecked;
+        Checkbox_1.setChecked = setChecked;
         function isChecked(checkboxId) {
-            var elt = getCheckboxFromId(checkboxId);
-            return !!elt && elt.checked;
+            var checkbox = Cache.getCheckboxById(checkboxId);
+            if (checkbox) {
+                return checkbox.checked;
+            }
+            return false;
         }
-        Checkbox.isChecked = isChecked;
+        Checkbox_1.isChecked = isChecked;
     })(Checkbox = Page.Checkbox || (Page.Checkbox = {}));
 })(Page || (Page = {}));
 
@@ -597,114 +719,148 @@ var Page;
 var Page;
 (function (Page) {
     var Tabs;
-    (function (Tabs) {
-        var ID_SUFFIX = "-id";
-        function getTabsById(id) {
-            var selector = "div.tabs[id=" + id + ID_SUFFIX + "]";
-            var elt = document.querySelector(selector);
-            if (!elt) {
-                console.error("Cannot find tabs '" + selector + "'.");
+    (function (Tabs_1) {
+        var Tabs = /** @class */ (function () {
+            function Tabs(container) {
+                var _this = this;
+                this.observers = [];
+                this.id = Tabs.computeShortId(container.id);
+                this.inputElements = [];
+                var inputElements = container.querySelectorAll("input");
+                for (var i = 0; i < inputElements.length; i++) {
+                    this.inputElements.push(inputElements[i]);
+                    inputElements[i].addEventListener("change", function (event) {
+                        event.stopPropagation();
+                        _this.reloadValues();
+                        Storage.storeState(_this);
+                        _this.callObservers();
+                    }, false);
+                }
+                this.reloadValues();
             }
-            return elt;
-        }
-        /**
-         * @param {Object} tabsElt Node tab element
-         */
-        function getSelectedValues(tabsElt) {
-            var values = [];
-            var inputs = tabsElt.querySelectorAll("input");
-            for (var i = 0; i < inputs.length; i++) {
-                var input = inputs[i];
-                if (input.checked) {
-                    values.push(input.value);
+            Tabs.computeShortId = function (fullId) {
+                if (fullId.lastIndexOf(Tabs.ID_SUFFIX) != fullId.length - Tabs.ID_SUFFIX.length) {
+                    throw new Error("Invalid tabs container id: '" + fullId + "'.");
+                }
+                return fullId.substring(0, fullId.length - Tabs.ID_SUFFIX.length);
+            };
+            Object.defineProperty(Tabs.prototype, "values", {
+                get: function () {
+                    return this._values;
+                },
+                set: function (newValues) {
+                    for (var _i = 0, _a = this.inputElements; _i < _a.length; _i++) {
+                        var inputElement = _a[_i];
+                        var isWanted = false;
+                        for (var _b = 0, newValues_1 = newValues; _b < newValues_1.length; _b++) {
+                            var newValue = newValues_1[_b];
+                            if (inputElement.value === newValue) {
+                                isWanted = true;
+                                break;
+                            }
+                        }
+                        inputElement.checked = isWanted;
+                    }
+                    this.reloadValues();
+                },
+                enumerable: false,
+                configurable: true
+            });
+            Tabs.prototype.callObservers = function () {
+                for (var _i = 0, _a = this.observers; _i < _a.length; _i++) {
+                    var observer = _a[_i];
+                    observer(this._values);
+                }
+            };
+            Tabs.prototype.reloadValues = function () {
+                var values = [];
+                for (var _i = 0, _a = this.inputElements; _i < _a.length; _i++) {
+                    var inputElement = _a[_i];
+                    if (inputElement.checked) {
+                        values.push(inputElement.value);
+                    }
+                }
+                this._values = values;
+            };
+            Tabs.ID_SUFFIX = "-id";
+            return Tabs;
+        }());
+        var Cache;
+        (function (Cache) {
+            function loadCache() {
+                var result = {};
+                var containerElements = document.querySelectorAll("div.tabs[id]");
+                for (var i = 0; i < containerElements.length; i++) {
+                    var tabs = new Tabs(containerElements[i]);
+                    result[tabs.id] = tabs;
+                }
+                return result;
+            }
+            var tabsCache;
+            function getTabsById(id) {
+                Cache.load();
+                return tabsCache[id] || null;
+            }
+            Cache.getTabsById = getTabsById;
+            function load() {
+                if (typeof tabsCache === "undefined") {
+                    tabsCache = loadCache();
                 }
             }
-            return values;
-        }
+            Cache.load = load;
+        })(Cache || (Cache = {}));
         var Storage;
         (function (Storage) {
             var PREFIX = "tabs";
             var SEPARATOR = ";";
-            function attachStorageEvents() {
-                var tabsElements = document.querySelectorAll("div.tabs[id]");
-                var _loop_1 = function (i) {
-                    var tabsElement = tabsElements[i];
-                    var fullId = tabsElement.id;
-                    if (fullId.indexOf(ID_SUFFIX, fullId.length - ID_SUFFIX.length) !== -1) {
-                        var id_1 = fullId.substring(0, fullId.length - ID_SUFFIX.length);
-                        var saveTabsState = function () {
-                            var valuesList = getSelectedValues(tabsElement);
-                            var values = valuesList.join(SEPARATOR);
-                            Page.Helpers.URL.setQueryParameter(PREFIX, id_1, values);
-                        };
-                        var inputs = tabsElement.querySelectorAll("input");
-                        for (var i_1 = 0; i_1 < inputs.length; i_1++) {
-                            inputs[i_1].addEventListener("change", saveTabsState);
-                        }
-                    }
-                };
-                for (var i = 0; i < tabsElements.length; i++) {
-                    _loop_1(i);
-                }
+            function storeState(tabs) {
+                var valuesList = tabs.values;
+                var values = valuesList.join(SEPARATOR);
+                Page.Helpers.URL.setQueryParameter(PREFIX, tabs.id, values);
             }
-            Storage.attachStorageEvents = attachStorageEvents;
+            Storage.storeState = storeState;
             function applyStoredState() {
                 Page.Helpers.URL.loopOnParameters(PREFIX, function (controlId, value) {
                     var values = value.split(SEPARATOR);
-                    if (!getTabsById(controlId)) {
+                    var tabs = Cache.getTabsById(controlId);
+                    if (!tabs) {
                         console.log("Removing invalid query parameter '" + controlId + "=" + value + "'.");
                         Page.Helpers.URL.removeQueryParameter(PREFIX, controlId);
                     }
                     else {
-                        setValues(controlId, values);
+                        tabs.values = values;
+                        tabs.callObservers();
                     }
                 });
             }
             Storage.applyStoredState = applyStoredState;
         })(Storage || (Storage = {}));
-        Storage.applyStoredState();
-        Storage.attachStorageEvents();
+        Page.Helpers.Events.callAfterDOMLoaded(function () {
+            Cache.load();
+            Storage.applyStoredState();
+        });
         /**
          * @return {boolean} Whether or not the observer was added
          */
         function addObserver(tabsId, observer) {
-            var divWrapper = getTabsById(tabsId);
-            if (divWrapper) {
-                var inputs = divWrapper.querySelectorAll("input");
-                for (var i = 0; i < inputs.length; i++) {
-                    var input = inputs[i];
-                    input.addEventListener("change", function (event) {
-                        event.stopPropagation();
-                        observer(getSelectedValues(divWrapper));
-                    }, false);
-                }
+            var tabs = Cache.getTabsById(tabsId);
+            if (tabs) {
+                tabs.observers.push(observer);
                 return true;
             }
             return false;
         }
-        Tabs.addObserver = addObserver;
+        Tabs_1.addObserver = addObserver;
         function getValues(tabsId) {
-            var divWrapper = getTabsById(tabsId);
-            if (!divWrapper) {
-                return [];
-            }
-            return getSelectedValues(divWrapper);
+            var tabs = Cache.getTabsById(tabsId);
+            return tabs.values;
         }
-        Tabs.getValues = getValues;
+        Tabs_1.getValues = getValues;
         function setValues(tabsId, values) {
-            var divWrapper = getTabsById(tabsId);
-            var inputs = divWrapper.querySelectorAll("input");
-            for (var i = 0; i < inputs.length; i++) {
-                inputs[i].checked = false;
-            }
-            for (var _i = 0, values_1 = values; _i < values_1.length; _i++) {
-                var value = values_1[_i];
-                var id = tabsId + "-" + value + "-id";
-                var inputElement = divWrapper.querySelector("input[id=" + id + "]");
-                inputElement.checked = true;
-            }
+            var tabs = Cache.getTabsById(tabsId);
+            tabs.values = values;
         }
-        Tabs.setValues = setValues;
+        Tabs_1.setValues = setValues;
     })(Tabs = Page.Tabs || (Page.Tabs = {}));
 })(Page || (Page = {}));
 
@@ -819,15 +975,6 @@ var Page;
                     Popup.assignPopup(_this);
                 });
             }
-            ColorPicker.getColorPicker = function (id) {
-                if (!ColorPicker.colorPickersMap[id]) {
-                    var element = document.querySelector("#" + id + ".color-picker");
-                    if (element) {
-                        ColorPicker.colorPickersMap[id] = new ColorPicker(element);
-                    }
-                }
-                return ColorPicker.colorPickersMap[id];
-            };
             Object.defineProperty(ColorPicker.prototype, "value", {
                 get: function () {
                     return this.element.dataset.currentColor;
@@ -855,9 +1002,32 @@ var Page;
                 this.colorPreview.style.background = hexValue;
                 this.colorPreviewText.textContent = hexValue;
             };
-            ColorPicker.colorPickersMap = {};
             return ColorPicker;
         }());
+        var Cache;
+        (function (Cache) {
+            function loadCache() {
+                var result = {};
+                var containers = document.querySelectorAll(".color-picker[id]");
+                for (var i = 0; i < containers.length; i++) {
+                    var coloPicker = new ColorPicker(containers[i]);
+                    result[containers[i].id] = coloPicker;
+                }
+                return result;
+            }
+            var colorPickersCache;
+            function getColorPickerById(id) {
+                Cache.load();
+                return colorPickersCache[id] || null;
+            }
+            Cache.getColorPickerById = getColorPickerById;
+            function load() {
+                if (typeof colorPickersCache === "undefined") {
+                    colorPickersCache = loadCache();
+                }
+            }
+            Cache.load = load;
+        })(Cache || (Cache = {}));
         var Storage;
         (function (Storage) {
             var PREFIX = "color-picker";
@@ -867,12 +1037,14 @@ var Page;
             Storage.storeState = storeState;
             function applyStoredState() {
                 Page.Helpers.URL.loopOnParameters(PREFIX, function (controlId, value) {
+                    var colorPicker = Cache.getColorPickerById(controlId);
                     var hexValue = ColorSpace.parseHexa(value);
-                    if (hexValue) {
-                        var colorPicker = ColorPicker.getColorPicker(controlId);
-                        if (colorPicker) {
-                            colorPicker.value = hexValue;
-                        }
+                    if (!colorPicker || !hexValue) {
+                        console.log("Removing invalid query parameter '" + controlId + "=" + value + "'.");
+                        Page.Helpers.URL.removeQueryParameter(PREFIX, controlId);
+                    }
+                    else {
+                        colorPicker.value = hexValue;
                     }
                 });
             }
@@ -1053,7 +1225,6 @@ var Page;
                         var cursorBox = cursor.getBoundingClientRect();
                         handleOffset.x = 0.5 * cursorBox.width - (event.clientX - cursorBox.left);
                         handleOffset.y = 0.5 * cursorBox.height - (event.clientY - cursorBox.top);
-                        console.log(JSON.stringify(handleOffset));
                     }
                     else {
                         var coords = absoluteToRelative(event.clientX, event.clientY);
@@ -1147,17 +1318,12 @@ var Page;
             };
             return Popup;
         }());
-        window.addEventListener("load", function buildColorPickersMap() {
-            var list = document.querySelectorAll(".color-picker");
-            for (var i = 0; i < list.length; i++) {
-                var colorPickerElement = list[i];
-                var id = colorPickerElement.id;
-                ColorPicker.getColorPicker(id); // register the color picker
-            }
+        Page.Helpers.Events.callAfterDOMLoaded(function () {
+            Cache.load();
             Storage.applyStoredState();
         });
         function addObserver(id, observer) {
-            var colorPicker = ColorPicker.getColorPicker(id);
+            var colorPicker = Cache.getColorPickerById(id);
             if (colorPicker) {
                 colorPicker.observers.push(observer);
             }
@@ -1165,11 +1331,16 @@ var Page;
         }
         ColorPicker_1.addObserver = addObserver;
         function getValue(id) {
-            var colorPicker = ColorPicker.getColorPicker(id);
+            var colorPicker = Cache.getColorPickerById(id);
             var hexValue = colorPicker.value;
             return ColorSpace.hexToRgb(hexValue);
         }
         ColorPicker_1.getValue = getValue;
+        function getValueHex(id) {
+            var colorPicker = Cache.getColorPickerById(id);
+            return colorPicker.value;
+        }
+        ColorPicker_1.getValueHex = getValueHex;
         /**
          * @param id control id
          * @param r integer in [0, 255]
@@ -1183,7 +1354,7 @@ var Page;
                 b: roundAndClamp(b, 0, 255),
             };
             var hexValue = ColorSpace.rgbToHex(rgb);
-            var colorPicker = ColorPicker.getColorPicker(id);
+            var colorPicker = Cache.getColorPickerById(id);
             colorPicker.value = hexValue;
         }
         ColorPicker_1.setValue = setValue;
@@ -1220,7 +1391,7 @@ var Page;
         }
         /* Bind event so that filename is displayed on upload */
         var labelsSelector = ".file-control.upload > label";
-        window.addEventListener("load", function () {
+        Page.Helpers.Events.callAfterDOMLoaded(function () {
             var labels = document.querySelectorAll(labelsSelector);
             var _loop_1 = function (i) {
                 var label = labels[i];
@@ -1305,12 +1476,12 @@ var Page;
                 document.body.style.overflow = value ? "hidden" : "auto";
             }
             if (fullscreenCheckbox) {
-                window.addEventListener("load", function () {
+                Page.Helpers.Events.callAfterDOMLoaded(function () {
                     hideOverflow(fullscreenCheckbox.checked);
                     fullscreenCheckbox.addEventListener("change", function () {
                         hideOverflow(fullscreenCheckbox.checked);
                     });
-                }, false);
+                });
                 if (sidePaneCheckbox) {
                     fullscreenCheckbox.addEventListener("change", function () {
                         if (fullscreenCheckbox.checked) {
@@ -1356,7 +1527,7 @@ var Page;
                 }
             }
         }
-        window.addEventListener("load", updateCanvasSize, false);
+        Page.Helpers.Events.callAfterDOMLoaded(updateCanvasSize);
         fullscreenCheckbox.addEventListener("change", updateCanvasSize, false);
         window.addEventListener("resize", updateCanvasSize, false);
         var fullscreenToggleObservers = [updateCanvasSize];
