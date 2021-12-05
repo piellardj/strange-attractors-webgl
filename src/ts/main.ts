@@ -154,7 +154,7 @@ function main() {
 
         if ((canvas2D as any).msToBlob) { // for IE
             const blob = (canvas2D as any).msToBlob();
-            window.navigator.msSaveBlob(blob, "image.png");
+            (window.navigator as any).msSaveBlob(blob, "image.png");
         } else {
             canvas2D.toBlob((blob) => {
                 const link = document.createElement("a");
