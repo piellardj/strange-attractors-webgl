@@ -10,6 +10,10 @@ const data = {
         "This project supports various attractor types, and for each of them you can change the parameters and watch unique patterns appear."
     ],
     githubProjectName: "strange-attractors-webgl",
+    readme: {
+        filepath: path.join(__dirname, "..", "README.md"),
+        branchName: "master"
+    },
     additionalLinks: [],
     scriptFiles: [
         "script/main.min.js"
