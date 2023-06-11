@@ -7,4 +7,6 @@ This project supports various attractor types, and for each of them you can chan
 
 See it live [here](https://piellardj.github.io/strange-attractors-webgl/?page%3Acheckbox%3Aformula-checkbox-id=true&page%3Acanvas%3Afullscreen=true&page%3Acanvas%3Asidepane=true).
 
+[![Donate](https://raw.githubusercontent.com/piellardj/piellardj.github.io/master/images/readme/donate-paypal.svg)](https://www.paypal.com/donate/?hosted_button_id=AF7H7GEJTL95E)
+
 ![Screenshot](src/readme/illustration.jpg)
